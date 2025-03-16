@@ -15,7 +15,7 @@ Implementovať stránku na prihlasovanie a registráciu (frontend).
 
 # Vykonaná práca:
 
-Implementovala som stránku na prihlasovanie a registráciu (frontend). Zároveň som pripravila aj základ pre úvodnú (domovskú) stránku, odkiaľ sa dá prekliknúť na prihlasovanie a registráciu. Ešte je potrebné doladiť detaily, ale základ by mal byť hotový.
+Implementovala som stránku na prihlasovanie a registráciu (frontend). Zároveň som pripravila aj základ pre úvodnú (domovskú) stránku, odkiaľ sa dá prekliknúť na prihlasovanie a registráciu. Ešte je potrebné doladiť detaily, ale základ by mal byť hotový. (Commit e0490a3)
 
 # Zdôvodnenie rozdielov medzi plánom a vykonanou prácou:
 
