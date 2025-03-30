@@ -4,4 +4,4 @@ node_modules/
 # environment variables
 .env
 
-config.secrets
+config.secrets.js
