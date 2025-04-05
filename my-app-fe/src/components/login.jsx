@@ -1,4 +1,40 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      setError("Email and password are required!");
+      return;
+    }
+
+    // clear previous errors
+    setError("");
+
+    const response = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: email, password }),
+    });
+
+    if (response.ok) {
+      navigate("/dashboard");
+    } else {
+      const data = await response.json();
+      setError(data.error || "Prihlásenie zlyhalo.");
+    }    
+  };  
+
   return (
     <div
       className="container d-flex justify-content-center align-items-center"
