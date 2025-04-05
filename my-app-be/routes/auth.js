@@ -6,8 +6,8 @@ import { config } from '../../config/config.js';
 const router = express.Router();
 
 router.post("/login", (req, res) => {
-    const { username, password } = req.body;
-    getUsers(username)
+    const { email, password } = req.body;
+    getUsers(email)
         .then((result) => {             
             if (result.rows && result.rows.length === 1) {                
                 const userId = result.rows[0].user_id;

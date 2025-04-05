@@ -24,7 +24,7 @@ function Login() {
     const response = await fetch("http://localhost:3000/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: email, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     if (response.ok) {
@@ -51,19 +51,24 @@ function Login() {
         }}
       >
         <h1 className="text-center mb-4 text-white">Prihlásenie</h1>
-        <form className="d-flex flex-column gap-3">
+        <form className="d-flex flex-column gap-3" onSubmit={handleSubmit}>
           <input
             type="email"
             className="form-control"
             placeholder="Email"
+            value={email}
+            onChange={handleEmailChange}
             required
           />
           <input
             type="password"
             className="form-control"
             placeholder="Heslo"
+            value={password}
+            onChange={handlePasswordChange}
             required
           />
+          {error && <div className="text-danger">{error}</div>}
           <button type="submit" className="btn btn-success w-100">
             Prihlásiť sa
           </button>
