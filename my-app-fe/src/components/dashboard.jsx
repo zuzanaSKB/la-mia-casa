@@ -5,7 +5,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // clear stored tokens or user info
+    // clear stored tokens
     navigate("/");
   };
 
@@ -21,14 +21,12 @@ function Dashboard() {
         position: "relative",
       }}
     >
-      {/* Logout button in top-right corner */}
       <div style={{ position: "absolute", top: "10px", right: "10px" }}>
         <button className="btn btn-danger btn-sm" onClick={handleLogout}>
           Odhlásiť sa
         </button>
       </div>
 
-      {/* Main content centered */}
       <div
         className="d-flex flex-column justify-content-center align-items-center"
         style={{ minHeight: "100vh" }}
