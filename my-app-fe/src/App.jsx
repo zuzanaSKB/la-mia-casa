@@ -4,7 +4,9 @@ import Home from "./components/home";
 import Footer from "./components/footer";
 import Login from "./components/login";
 import Registration from "./components/registration";
-import Dashboard from "./components/dashboard";
+//import Dashboard from "./components/dashboard";
+import DashboardGuest from "./components/dashboardGuest";
+import BookRoomForm from "./components/bookRoomForm";
 
 function App() {
   return (
@@ -14,7 +16,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboardGuest" element={<DashboardGuest />} />
+        <Route path="/bookRoomForm" element={<BookRoomForm />} />
         </Routes>
         <Footer />
       </div>
