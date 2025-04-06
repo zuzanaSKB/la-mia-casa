@@ -5,3 +5,16 @@ node_modules/
 .env
 
 config.secrets.js
+
+# logs
+logs/
+*.log
+npm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE and editor directories
+.vscode/
+.idea/

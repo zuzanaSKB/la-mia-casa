@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../../services/authService";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,22 +19,18 @@ function Login() {
       return;
     }
 
-    // clear previous errors
+    //clear previous errors
     setError("");
 
-    const response = await fetch("http://localhost:3000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      navigate("/dashboard");
-    } else {
-      const data = await response.json();
-      setError(data.error || "Prihlásenie zlyhalo.");
-    }    
-  };  
+    login(email, password)
+      .then(() => {
+        navigate('/dashboardGuest');
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+        setError(error.message || "Prihlásenie zlyhalo.");
+      });
+  };
 
   return (
     <div

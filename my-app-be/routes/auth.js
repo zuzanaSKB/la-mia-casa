@@ -1,61 +1,61 @@
 import express from 'express';
-import { getUsers } from '../../models/users.js';
-import { comparePassword } from '../../utils/authHelpers.js';
-import { config } from '../../config/config.js';
+import { getUsers } from '../models/users.js';
+import { comparePassword } from '../utils/authHelpers.js';
+import { config } from '../config/config.js';
 
 const router = express.Router();
 
-router.post("/login", (req, res) => {
+// Login route
+router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    getUsers(email)
-        .then((result) => {             
-            if (result.rows && result.rows.length === 1) {                
-                const userId = result.rows[0].user_id;
-                const hashedPassword = result.rows[0].password;                
-                comparePassword(password, hashedPassword)
-                    .then((isValid) => {
-                        if (isValid) {
-                            req.session.userId = userId;  // creates session
-                            return res.status(200).end();
-                        }
-                        // invalid password
-                        else {
-                            console.log("Invalid password");
-                            return res.status(401).end();
-                        }
-                    })
-                    .catch((e) => { 
-                        console.log(e); 
-                        // internal server error
-                        res.status(500).end(); 
-                    })
+
+    try {
+        const result = await getUsers(email); //get user from DB
+        
+        if (result.rows && result.rows.length === 1) {
+            const userId = result.rows[0].user_id;
+            const hashedPassword = result.rows[0].password;
+            
+            const isValid = await comparePassword(password, hashedPassword); //compare password
+
+            if (isValid) {
+                req.session.userId = userId;  //create session
+                return res.status(200).send({ message: 'Logged in successfully' });
+            } else {
+                console.log("Invalid password");
+                return res.status(401).send({ error: 'Invalid credentials' });
             }
-            // user does not exist
-            else {
-                console.log("User does not exist");
-                return res.status(401).end();
-            }
-        })
-        .catch((e) => {
-            console.log(e);
-            return res.status(500).end();
-        })
+        } else {
+            console.log("User does not exist");
+            return res.status(401).send({ error: 'User does not exist' });
+        }
+    } catch (e) {
+        console.error("Error during login:", e);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
 });
 
-router.delete("/logout", (req, res) => {    
-    if (req.session && req.session.userId) {        
-        req.session.destroy((err) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).end();  // internal server error
-            } else {
-                // clear the cookie in the browser
-                res.clearCookie(config.session.cookieName);
-                return res.status(200).end();  // successful logout
-            }
-        });
-    } else {
-        return res.status(400).end();  // bad request - session doesn't exist
+// Logout route
+router.delete("/logout", async (req, res) => {
+    try {
+        if (req.session && req.session.userId) {
+            await new Promise((resolve, reject) => {
+                req.session.destroy((err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            res.clearCookie(config.session.cookieName);  //clear cookie in browser
+            return res.status(200).send({ message: 'Logged out successfully' });
+        } else {
+            return res.status(400).send({ error: 'Session does not exist' });
+        }
+    } catch (e) {
+        console.error("Error during logout:", e);
+        return res.status(500).send({ error: 'Internal server error' });
     }
 });
 
