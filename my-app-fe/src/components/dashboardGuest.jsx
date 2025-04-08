@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function DashboardGuest() {
+function DashboardGuest(props) {
   const navigate = useNavigate();
 
   const handleLogout = () => {

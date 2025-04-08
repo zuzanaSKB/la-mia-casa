@@ -2,34 +2,35 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
 
-function Login() {
+function Login(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
+  
+  const navigate = useNavigate();  
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      setError("Email and password are required!");
+      props.setError("Email and password are required!");
       return;
     }
 
-    //clear previous errors
-    setError("");
-
     login(email, password)
       .then(() => {
+        props.setAuthStatus(true);
         navigate('/dashboardGuest');
       })
       .catch((error) => {
-        console.log("Error:", error);
-        setError(error.message || "Prihlásenie zlyhalo.");
+        console.log("Error:", error.message);
+        props.setError(error.message);
       });
+    
+    //clear error message
+    props.setError('');
   };
 
   return (
@@ -65,7 +66,7 @@ function Login() {
             onChange={handlePasswordChange}
             required
           />
-          {error && <div className="text-danger">{error}</div>}
+          {/* {error && <div className="text-danger">{error}</div>} */}
           <button type="submit" className="btn btn-success w-100">
             Prihlásiť sa
           </button>

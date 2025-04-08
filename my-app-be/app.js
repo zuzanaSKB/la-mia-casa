@@ -37,9 +37,9 @@ app.use(
       saveUninitialized: false,
       name: config.session.cookieName,
       cookie: {
-        secure: process.env.STATUS === 'production',
+        secure: false,
         httpOnly: true,
-        sameSite: process.env.STATUS === 'production' ? 'none' : 'lax',
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24, // 1 day
       },
     })

@@ -20,6 +20,7 @@ router.post("/login", async (req, res) => {
 
             if (isValid) {
                 req.session.userId = userId;  //create session
+                console.log("Session created:", req.session);
                 return res.status(200).send({ message: 'Logged in successfully' });
             } else {
                 console.log("Invalid password");
@@ -61,11 +62,12 @@ router.delete("/logout", async (req, res) => {
 
 // Check if is user logged in
 router.get('/check', (req, res) => {
-    if (req.session.user) {
-      res.json({ user: req.session.user });
+    if (req.session.userId) {
+        res.json({ userId: req.session.userId });
     } else {
-      res.status(401).json({ error: 'Not authenticated' });
+        console.log(req.session);
+        res.status(401).json({ error: 'Not authenticated' });
     }
-  });
+});
 
 export default router;

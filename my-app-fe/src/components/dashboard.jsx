@@ -1,12 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Dashboard() {
+function Dashboard(props) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // clear stored tokens
-    navigate("/");
+    logout()
+      .then(() => {
+          props.setAuthStatus(false);
+          navigate('/');
+      })
+      .catch((error) => {
+          console.log(error.message);
+          props.setError(error.message)
+      });
   };
 
   return (
