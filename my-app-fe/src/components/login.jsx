@@ -20,9 +20,15 @@ function Login(props) {
     }
 
     login(email, password)
-      .then(() => {
+      .then((data) => {
+        console.log("data: ", data);
         props.setAuthStatus(true);
-        navigate('/dashboardGuest');
+        props.setUserRole(data.role);
+        if (data.role === 'guest') {
+          navigate('/dashboardGuest');
+        } else if (data.role === 'admin') {
+          navigate('/dashboardAdmin');
+        }
       })
       .catch((error) => {
         console.log("Error:", error.message);
@@ -66,7 +72,7 @@ function Login(props) {
             onChange={handlePasswordChange}
             required
           />
-          {/* {error && <div className="text-danger">{error}</div>} */}
+          {props.error && <div className="text-danger">{props.error}</div>}
           <button type="submit" className="btn btn-success w-100">
             Prihlásiť sa
           </button>

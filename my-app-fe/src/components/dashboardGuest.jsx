@@ -5,7 +5,16 @@ function DashboardGuest(props) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate("/");
+    logout()
+      .then(() => {
+          props.setAuthStatus(false);
+          props.setUserRole(null);
+          navigate('/');
+      })
+      .catch((error) => {
+          console.log(error.message);
+          props.setError(error.message)
+      });
   };
 
   const goToBookingPage = () => {
@@ -58,8 +67,8 @@ function DashboardGuest(props) {
           <div className="mb-5">
             <h4> Moje recenzie</h4>
             <ul>
-              <li>Izba 101 - 5⭐ - "Úžasné ubytovanie!"</li>
-              <li>Izba 305 - 4⭐ - "Veľmi príjemný pobyt."</li>
+              <li>Izba 1 - 5⭐ - "Úžasné ubytovanie!"</li>
+              <li>Izba 3 - 4⭐ - "Veľmi príjemný pobyt."</li>
             </ul>
           </div>
 

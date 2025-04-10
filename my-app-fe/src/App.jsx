@@ -6,6 +6,7 @@ import Login from "./components/login";
 import Registration from "./components/registration";
 //import Dashboard from "./components/dashboard";
 import DashboardGuest from "./components/dashboardGuest";
+import DashboardAdmin from "./components/dashboardAdmin";
 //import BookRoomForm from "./components/bookRoomForm";
 import ProtectedRoute from "./components/protectedRoute";
 import { useState } from 'react';
@@ -13,6 +14,7 @@ import { useState } from 'react';
 function App() {
   const [error, setError] = useState('');
   const [authStatus, setAuthStatus] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   return (
     <BrowserRouter>
@@ -26,6 +28,7 @@ function App() {
                 error={error}
                 setError={setError}
                 setAuthStatus={setAuthStatus}
+                setUserRole={setUserRole}
               />
             }
           />
@@ -33,8 +36,20 @@ function App() {
           <Route
             path="/dashboardGuest"
             element={
-              <ProtectedRoute authStatus={authStatus}>
+              <ProtectedRoute authStatus={authStatus} allowedRole="guest" userRole={userRole}>
                 <DashboardGuest
+                  error={error}
+                  setError={setError}
+                  setAuthStatus={setAuthStatus}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboardAdmin"
+            element={
+              <ProtectedRoute authStatus={authStatus} allowedRole="admin" userRole={userRole}>
+                <DashboardAdmin
                   error={error}
                   setError={setError}
                   setAuthStatus={setAuthStatus}

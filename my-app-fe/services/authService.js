@@ -17,7 +17,8 @@ function login(email, password) {
           throw new Error(text || "Error logging in");
         });
       }
-      return response;
+      //console.log(response);
+      return response.json();
     })
     .catch((err) => {
       throw new Error(err.message || "An unexpected error occurred.");
