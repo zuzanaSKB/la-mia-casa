@@ -9,9 +9,9 @@ function Login(props) {
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
   
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -19,24 +19,24 @@ function Login(props) {
       return;
     }
 
-    login(email, password)
-      .then((data) => {
-        console.log("data: ", data);
-        props.setAuthStatus(true);
-        props.setUserRole(data.role);
-        if (data.role === 'guest') {
-          navigate('/dashboardGuest');
-        } else if (data.role === 'admin') {
-          navigate('/dashboardAdmin');
-        }
-      })
-      .catch((error) => {
-        console.log("Error:", error.message);
-        props.setError(error.message);
-      });
-    
-    //clear error message
     props.setError('');
+
+    try {
+      const data = await login(email, password);
+      console.log("data: ", data);
+      props.setAuthStatus(true);
+      props.setUserRole(data.role);
+      
+      //navigate based on user role
+      if (data.role === 'guest') {
+        navigate('/dashboardGuest');
+      } else if (data.role === 'admin') {
+        navigate('/dashboardAdmin');
+      }
+    } catch (error) {
+      console.log("Error:", error.message);
+      props.setError(error.message);
+    }
   };
 
   return (

@@ -1,20 +1,20 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../services/authService";
 
 function DashboardGuest(props) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout()
-      .then(() => {
-          props.setAuthStatus(false);
-          props.setUserRole(null);
-          navigate('/');
-      })
-      .catch((error) => {
-          console.log(error.message);
-          props.setError(error.message)
-      });
+  const handleLogout = async () => {
+    try {
+      await logout();
+      props.setAuthStatus(false);
+      props.setUserRole(null);
+      navigate('/');
+    } catch (error) {
+      console.log(error.message);
+      props.setError(error.message);
+    }
   };
 
   const goToBookingPage = () => {
