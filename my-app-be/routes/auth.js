@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers } from '../models/users.js';
+import { getUser } from '../models/users.js';
 import { comparePassword } from '../utils/authHelpers.js';
 import { config } from '../config/config.js';
 
@@ -10,24 +10,26 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const result = await getUsers(email); //get user from DB
+        const result = await getUser(email); //get user from DB
         
         if (result.rows && result.rows.length === 1) {
-            const userId = result.rows[0].user_id;
-            const hashedPassword = result.rows[0].password;
-            
-            const isValid = await comparePassword(password, hashedPassword); //compare password
+            const user = result.rows[0];            
+            const isValid = await comparePassword(password, user.password); //compare password
 
             if (isValid) {
-                req.session.userId = userId;  //create session
+                req.session.userId = user.id;  //create session
                 console.log("Session created:", req.session);
-                return res.status(200).send({ message: 'Logged in successfully' });
+
+                return res.status(200).send({
+                    message: 'Logged in successfully',
+                    role: user.role,
+                    name: user.name,
+                    email: user.email
+                });
             } else {
-                console.log("Invalid password");
                 return res.status(401).send({ error: 'Invalid credentials' });
             }
         } else {
-            console.log("User does not exist");
             return res.status(401).send({ error: 'User does not exist' });
         }
     } catch (e) {

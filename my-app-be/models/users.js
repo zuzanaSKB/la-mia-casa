@@ -1,9 +1,16 @@
 import pool from '../config/db.js';
 
 
-export const getUsers = (email) => {
+export const getUser = (email) => {
     return pool.query(
         "SELECT * FROM users WHERE email = $1",
+        [email]
+    );
+};
+
+export const getUserRole = (email) => {
+    return pool.query(
+        "SELECT role FROM users WHERE email = $1",
         [email]
     );
 };
