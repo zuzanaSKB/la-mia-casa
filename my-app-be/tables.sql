@@ -47,3 +47,9 @@ CREATE TABLE birthday_discounts (
     validity TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE session (
+    "sid" varchar NOT NULL PRIMARY KEY,
+    "sess" json NOT NULL,
+    "expire" timestamp(6) NOT NULL
+);
