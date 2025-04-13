@@ -8,6 +8,7 @@ import { config } from './config/config.js';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
 import usersRoutes from './routes/users.js';
+import reservationRoutes from './routes/reservation.js'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.use(
 
 app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
+app.use('/reservation', reservationRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server is running.")
