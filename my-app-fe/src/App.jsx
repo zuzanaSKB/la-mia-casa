@@ -4,10 +4,9 @@ import Home from "./components/home";
 import Footer from "./components/footer";
 import Login from "./components/login";
 import Registration from "./components/registration";
-//import Dashboard from "./components/dashboard";
 import DashboardGuest from "./components/dashboardGuest";
 import DashboardAdmin from "./components/dashboardAdmin";
-//import BookRoomForm from "./components/bookRoomForm";
+import BookRoomForm from "./components/bookRoomForm";
 import ProtectedRoute from "./components/protectedRoute";
 import { useState } from 'react';
 
@@ -15,12 +14,24 @@ function App() {
   const [error, setError] = useState('');
   const [authStatus, setAuthStatus] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route 
+            path="/" 
+            element={
+              <Home
+                error={error}
+                setError={setError}
+                setAuthStatus={setAuthStatus}
+                setUserRole={setUserRole}
+                setUserId={setUserId}
+              />
+            } 
+          />
           <Route
             path="/login"
             element={
@@ -29,6 +40,7 @@ function App() {
                 setError={setError}
                 setAuthStatus={setAuthStatus}
                 setUserRole={setUserRole}
+                setUserId={setUserId}
               />
             }
           />
@@ -41,6 +53,7 @@ function App() {
                   error={error}
                   setError={setError}
                   setAuthStatus={setAuthStatus}
+                  setUserRole={setUserRole}
                 />
               </ProtectedRoute>
             }
@@ -53,6 +66,18 @@ function App() {
                   error={error}
                   setError={setError}
                   setAuthStatus={setAuthStatus}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bookRoomForm"
+            element={
+              <ProtectedRoute authStatus={authStatus} allowedRole="guest" userRole={userRole}>
+                <BookRoomForm
+                  error={error}
+                  setError={setError}
+                  userId={userId}
                 />
               </ProtectedRoute>
             }
