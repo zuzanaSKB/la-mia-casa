@@ -54,6 +54,7 @@ function App() {
                   setError={setError}
                   setAuthStatus={setAuthStatus}
                   setUserRole={setUserRole}
+                  userId={userId}
                 />
               </ProtectedRoute>
             }

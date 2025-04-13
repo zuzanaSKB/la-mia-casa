@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/authService";
+import { fetchUserReservations, cancelReservation } from "../../services/reservationService";
 
 function DashboardGuest(props) {
   const navigate = useNavigate();
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
   const handleLogout = async () => {
     try {
@@ -18,8 +23,43 @@ function DashboardGuest(props) {
   };
 
   const goToBookingPage = () => {
+    props.setError("");
     navigate("/bookRoomForm");
   };
+
+  const handleCancel = async (reservationId) => {
+    try {
+      const response = await cancelReservation(reservationId);
+      if (response.success) {
+        //reload reservations after cancellation
+        const updatedReservations = await fetchUserReservations(props.userId);
+        setReservations(updatedReservations);
+      } else {
+        props.setError(response.message);
+      }
+    } catch (error) {
+      console.error("Chyba pri zrušení rezervácie:", error);
+      props.setError("Nepodarilo sa zrušiť rezerváciu.");
+    }
+  };
+
+  useEffect(() => {
+    const loadReservations = async () => {
+      try {
+        const data = await fetchUserReservations(props.userId);
+        setReservations(data);
+      } catch (error) {
+        console.error("Chyba pri načítavaní rezervácií:", error);
+        props.setError("Nepodarilo sa načítať rezervácie.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (props.userId) {
+      loadReservations();
+    }
+  }, [props.userId]);
 
   return (
     <div
@@ -57,11 +97,30 @@ function DashboardGuest(props) {
           <h1 className="mb-4 text-center">Vitajte späť!</h1>
 
           <div className="mb-5">
-            <h4> Moje rezervácie</h4>
-            <ul>
-              <li>Izba 1 - 15.04.2025 - 17.04.2025 - Potvrdené</li>
-              <li>Izba 2 - 01.05.2025 - 05.05.2025 - Čaká na potvrdenie</li>
-            </ul>
+            <h4>Moje rezervácie</h4>
+            {loading ? (
+              <p>Načítavam rezervácie...</p>
+            ) : reservations.length > 0 ? (
+              <ul>
+                {reservations.map((res) => (
+                  <li key={res.id}>
+                    {res.room_name} - {formatDate(res.start_date)} až {formatDate(res.end_date)} -{" "}
+                    {res.status === "confirmed"
+                      ? "Potvrdené"
+                      : "Čaká na potvrdenie"} 
+                    {" "}
+                    <button
+                      className="btn btn-outline-danger btn-sm ms-2"
+                      onClick={() => handleCancel(res.id)}
+                    >
+                      Zrušiť
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nemáte žiadne rezervácie.</p>
+            )}
           </div>
 
           <div className="mb-5">
