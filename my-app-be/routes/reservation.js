@@ -1,10 +1,9 @@
 import express from "express";
-import { getAvailableRooms } from "../models/reservations.js";
-import { addReservation } from "../models/reservations.js";
+import { getAvailableRooms, addReservation, getUserReservations, cancelReservation } from "../models/reservations.js";
 
 const router = express.Router();
 
-//get all avai;able rooms
+//get all available rooms
 router.get("/available-rooms", async (req, res) => {
     const { from, to } = req.query;
 
@@ -35,5 +34,35 @@ router.post("/add", async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
+
+  router.get("/user/:id", async (req, res) => {
+    const userId = req.params.id;
+  
+    try {
+      const reservations = await getUserReservations(userId);
+  
+      if (reservations.length === 0) {
+        return res.status(200).json([]);
+      }
+  
+      res.status(200).json(reservations);
+    } catch (err) {
+      console.error("Failed to fetch active reservations:", err.message);
+      res.status(500).json({ error: "Failed to load active reservations" });
+    }
+  });
+
+  router.patch("/cancel/:id", async (req, res) => {
+    const reservationId = req.params.id;
+  
+    try {
+      const response = await cancelReservation(reservationId);
+      res.status(200).json(response);
+    } catch (err) {
+      console.error("Error cancelling reservation:", err);
+      res.status(500).json({ error: "Failed to cancel reservation" });
+    }
+  });
+
 
 export default router;

@@ -34,4 +34,24 @@ async function fetchAddReservation( userId, roomId, from, to) {
   }
 };
 
-export { fetchAvailableRooms, fetchAddReservation };
+async function fetchUserReservations(userId) {
+  const response = await fetch(`http://localhost:3000/reservation/user/${userId}`);
+  if (!response.ok) {
+    throw new Error("Chyba pri načítavaní rezervácií.");
+  }
+  return response.json();
+};
+
+async function cancelReservation(reservationId) {
+  const response = await fetch(`http://localhost:3000/reservation/cancel/${reservationId}`, {
+    method: "PATCH",
+  });
+
+  if (!response.ok) {
+    throw new Error("Nepodarilo sa zrušiť rezerváciu.");
+  }
+
+  return response.json();
+};
+
+export { fetchAvailableRooms, fetchAddReservation, fetchUserReservations, cancelReservation};
