@@ -27,7 +27,7 @@ async function login(email, password) {
 
 async function logout() {
   try {
-    const response = await fetch("/auth/logout", {
+    const response = await fetch("http://localhost:3000/auth/logout", {
       method: "DELETE",
       credentials: "include",
     });
