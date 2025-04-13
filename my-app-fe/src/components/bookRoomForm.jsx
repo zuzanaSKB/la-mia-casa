@@ -133,7 +133,7 @@ function BookRoomForm({ userId, error, setError }) {
               <option value="">Vyberte izbu</option>
               {filteredRooms.map((room) => (
                 <option key={room.id} value={room.id}>
-                  {room.name}
+                  {room.name} — {room.description} ({room.price_per_night}€ / noc)
                 </option>
               ))}
             </select>
