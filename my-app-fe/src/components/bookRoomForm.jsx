@@ -10,7 +10,7 @@ function BookRoomForm({ userId, error, setError }) {
   const [selectedRoom, setSelectedRoom] = useState("");
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+  const [noRooms, setNoRooms] = useState(false);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -21,21 +21,26 @@ function BookRoomForm({ userId, error, setError }) {
         const availableRooms = await fetchAvailableRooms(fromDate, toDate);
         setRooms(availableRooms);
         setError("");
+        
+        //check if no rooms available
+        const suitableRooms = availableRooms.filter((room) => room.capacity >= people);
+        setNoRooms(suitableRooms.length === 0);
       } catch (err) {
         setError("Nepodarilo sa načítať dostupné izby.");
         setRooms([]);
+        setNoRooms(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchRooms();
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, people]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    if (!selectedRoom || !fromDate || !toDate || !people) {
+    if (!fromDate || !toDate || !people || !selectedRoom) {
       setError("Vyplňte všetky povinné polia.");
       return;
     }
@@ -114,7 +119,11 @@ function BookRoomForm({ userId, error, setError }) {
           {loading && <p className="text-white">Načítavam dostupné izby...</p>}
           {error && <p className="text-danger">{error}</p>}
 
-          {people > 0 && !loading && (
+          {people > 0 && !loading && noRooms && (
+            <p className="text-white text-center">Žiadne dostupné izby pre vybraný dátum a počet osôb.</p>
+          )}
+
+          {people > 0 && !loading && !noRooms && (
             <select
               className="form-control"
               value={selectedRoom}
@@ -130,9 +139,11 @@ function BookRoomForm({ userId, error, setError }) {
             </select>
           )}
 
-          <button type="submit" className="btn btn-success w-100">
-            Odoslať rezerváciu
-          </button>
+          {!noRooms && (
+            <button type="submit" className="btn btn-success w-100">
+              Odoslať rezerváciu
+            </button>
+          )}
         </form>
       </div>
     </div>
