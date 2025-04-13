@@ -18,7 +18,7 @@ function DashboardGuest(props) {
   };
 
   const goToBookingPage = () => {
-    navigate("/rooms");
+    navigate("/bookRoomForm");
   };
 
   return (
