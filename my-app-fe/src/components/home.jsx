@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Login from "./login";
 import Registration from "./registration";
 
-function Home() {
+function Home( {error, setError, setAuthStatus, setUserRole, setUserId}) {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
 
@@ -59,7 +59,13 @@ function Home() {
       )}
 
       <div className="form-container">
-        {showLogin && <Login />}
+        {showLogin && <Login
+                error={error}
+                setError={setError}
+                setAuthStatus={setAuthStatus}
+                setUserRole={setUserRole}
+                setUserId={setUserId}
+              />}
         {showRegistration && <Registration />}
       </div>
     </div>
