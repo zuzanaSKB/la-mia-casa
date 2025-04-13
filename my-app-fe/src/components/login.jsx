@@ -26,6 +26,7 @@ function Login(props) {
       console.log("data: ", data);
       props.setAuthStatus(true);
       props.setUserRole(data.role);
+      props.setUserId(data.id);
       
       //navigate based on user role
       if (data.role === 'guest') {
