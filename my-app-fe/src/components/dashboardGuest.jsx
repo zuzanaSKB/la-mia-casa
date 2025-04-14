@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/authService";
 import { fetchUserReservations, fetchPastReservations, cancelReservation } from "../../services/reservationService";
-import { submitReview, fetchReviewsByUser} from "../../services/reviewService";
+import { submitReview, fetchReviewsByUser, deleteReview } from "../../services/reviewService";
 
 const StarRating = ({ rating, setRating }) => {
   return (
@@ -36,6 +36,10 @@ function DashboardGuest(props) {
 
   const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
+  const getReviewByReservationId = (reservationId) => {
+    return userReviews.find((review) => review.reservation_id === reservationId);
+  };
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -49,16 +53,28 @@ function DashboardGuest(props) {
   };
 
   const handleReviewSubmit = async (reservationId) => {
+    if (reviewRating === 0) {
+      props.setError("Zvoľte hodnotenie pred odoslaním.");
+      return;
+    }
     const reservation = pastReservations.find(res => res.id === reservationId);
     if (!reservation) return;
   
+    const existingReview = getReviewByReservationId(reservationId);
+  
     try {
-      await submitReview(props.userId, reservation.room_id, reviewText, reviewRating);
+      await submitReview(
+        props.userId,
+        reservation.room_id,
+        reviewText,
+        reviewRating,
+        reservationId,
+        existingReview?.id
+      );
   
       const updatedReviews = await fetchReviewsByUser(props.userId);
       setUserReviews(updatedReviews);
   
-      //reset form
       setActiveReviewId(null);
       setReviewRating(0);
       setReviewText("");
@@ -66,7 +82,7 @@ function DashboardGuest(props) {
       console.error("Chyba pri odosielaní recenzie:", error);
       props.setError("Nepodarilo sa odoslať recenziu.");
     }
-  };    
+  };
 
   const goToBookingPage = () => {
     props.setError("");
@@ -77,7 +93,6 @@ function DashboardGuest(props) {
     try {
       const response = await cancelReservation(reservationId);
       if (response.success) {
-        //reload reservations after cancellation
         const updatedReservations = await fetchUserReservations(props.userId);
         setReservations(updatedReservations);
       } else {
@@ -86,6 +101,17 @@ function DashboardGuest(props) {
     } catch (error) {
       console.error("Chyba pri zrušení rezervácie:", error);
       props.setError("Nepodarilo sa zrušiť rezerváciu.");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await deleteReview(reviewId);
+      const updatedReviews = await fetchReviewsByUser(props.userId);
+      setUserReviews(updatedReviews);
+    } catch (error) {
+      console.error("Chyba pri mazaní recenzie:", error);
+      props.setError("Nepodarilo sa vymazať recenziu.");
     }
   };
 
@@ -180,11 +206,14 @@ function DashboardGuest(props) {
               <p>Načítavam minulé rezervácie...</p>
             ) : pastReservations.length > 0 ? (
               <ul>
-                {pastReservations.map((res) => (
-                  <li key={res.id}>
-                    {res.room_name} - {formatDate(res.start_date)} až {formatDate(res.end_date)}
-                    <div className="mt-2">
-                      {activeReviewId === res.id ? (
+                {pastReservations.map((res) => {
+                  const existingReview = getReviewByReservationId(res.id);
+
+                  return (
+                    <li key={res.id}>
+                      {res.room_name} - {formatDate(res.start_date)} až {formatDate(res.end_date)}
+                      <div className="mt-2">
+                      {existingReview ? null : activeReviewId === res.id ? (
                         <div className="mb-3">
                           <StarRating rating={reviewRating} setRating={setReviewRating} />
                           <textarea
@@ -209,16 +238,16 @@ function DashboardGuest(props) {
                         </div>
                       ) : (
                         <button
-                          className="btn btn-outline-primary btn-sm ms-2"
+                          className="btn btn-outline-primary btn-sm"
                           onClick={() => setActiveReviewId(res.id)}
                         >
                           Pridať recenziu
                         </button>
                       )}
-                    </div>
-
-                  </li>
-                ))}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p>Nemáte žiadne minulé rezervácie.</p>
@@ -233,7 +262,55 @@ function DashboardGuest(props) {
               <ul>
                 {userReviews.map((review) => (
                   <li key={review.id}>
-                    {review.room_name} - {review.rating}⭐ - "{review.text || "Bez textu"}"
+                    {review.room_name} – {formatDate(review.reservation_start)} až {formatDate(review.reservation_end)}
+                    <div className="mt-2">
+                      {activeReviewId === review.reservation_id ? (
+                        <div className="mb-3">
+                          <StarRating rating={reviewRating} setRating={setReviewRating} />
+                          <textarea
+                            className="form-control mb-2"
+                            placeholder="Napíšte vašu recenziu..."
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            rows={2}
+                          />
+                          <button
+                            className="btn btn-sm btn-success me-2"
+                            onClick={() => handleReviewSubmit(review.reservation_id)}
+                          >
+                            Uložiť zmeny
+                          </button>
+                          <button
+                            className="btn btn-sm btn-secondary"
+                            onClick={() => setActiveReviewId(null)}
+                          >
+                            Zrušiť
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <p>
+                            Hodnotenie: {"★".repeat(review.rating)} {review.text ? `– "${review.text}"` : ""}
+                          </p>
+                          <button
+                            className="btn btn-outline-primary btn-sm me-2"
+                            onClick={() => {
+                              setActiveReviewId(review.reservation_id);
+                              setReviewRating(review.rating);
+                              setReviewText(review.text);
+                            }}
+                          >
+                            Upraviť recenziu
+                          </button>
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => handleDeleteReview(review.id)}
+                          >
+                            Odstrániť recenziu
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>
