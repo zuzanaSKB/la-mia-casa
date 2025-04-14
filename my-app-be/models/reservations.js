@@ -76,6 +76,34 @@ export async function getUserReservations(userId) {
   }
 };
 
+export async function getUserPastReservations(userId) {
+  try {
+    const currentDate = new Date();
+
+    const result = await pool.query(
+      `SELECT 
+         r.id, 
+         r.room_id,
+         rooms.name AS room_name,
+         r.start_date, 
+         r.end_date, 
+         r.status
+       FROM reservations r
+       JOIN rooms ON r.room_id = rooms.id
+       WHERE r.user_id = $1
+         AND r.status IN ('confirmed')
+         AND r.end_date < $2
+       ORDER BY r.end_date DESC`,
+      [userId, currentDate]
+    );
+
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching past reservations for user:", error);
+    throw new Error("Could not fetch past reservations for user");
+  }
+}
+
 export async function cancelReservation(reservationId) {
   try {
     const result = await pool.query(

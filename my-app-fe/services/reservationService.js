@@ -1,4 +1,4 @@
-async function fetchAvailableRooms(from, to) {
+export async function fetchAvailableRooms(from, to) {
   try {
     const response = await fetch(`http://localhost:3000/reservation/available-rooms?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
     
@@ -15,7 +15,7 @@ async function fetchAvailableRooms(from, to) {
   }
 }
 
-async function fetchAddReservation( userId, roomId, from, to) {
+export async function fetchAddReservation( userId, roomId, from, to) {
   try {
     const response = await fetch("http://localhost:3000/reservation/add", {
       method: "POST",
@@ -34,7 +34,7 @@ async function fetchAddReservation( userId, roomId, from, to) {
   }
 };
 
-async function fetchUserReservations(userId) {
+export async function fetchUserReservations(userId) {
   const response = await fetch(`http://localhost:3000/reservation/user/${userId}`);
   if (!response.ok) {
     throw new Error("Chyba pri načítavaní rezervácií.");
@@ -42,7 +42,15 @@ async function fetchUserReservations(userId) {
   return response.json();
 };
 
-async function cancelReservation(reservationId) {
+export async function fetchPastReservations(userId) {
+  const response = await fetch(`http://localhost:3000/reservation/user/${userId}/past`);
+  if (!response.ok) {
+    throw new Error("Chyba pri načítavaní minulých rezervácií.");
+  }
+  return response.json();
+}
+
+export async function cancelReservation(reservationId) {
   const response = await fetch(`http://localhost:3000/reservation/cancel/${reservationId}`, {
     method: "PATCH",
   });
@@ -53,5 +61,3 @@ async function cancelReservation(reservationId) {
 
   return response.json();
 };
-
-export { fetchAvailableRooms, fetchAddReservation, fetchUserReservations, cancelReservation};

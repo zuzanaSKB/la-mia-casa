@@ -1,5 +1,5 @@
 import express from "express";
-import { getAvailableRooms, addReservation, getUserReservations, cancelReservation } from "../models/reservations.js";
+import { getAvailableRooms, addReservation, getUserReservations, getUserPastReservations, cancelReservation } from "../models/reservations.js";
 
 const router = express.Router();
 
@@ -47,10 +47,23 @@ router.post("/add", async (req, res) => {
   
       res.status(200).json(reservations);
     } catch (err) {
-      console.error("Failed to fetch active reservations:", err.message);
-      res.status(500).json({ error: "Failed to load active reservations" });
+      console.error("Failed to fetch reservations:", err.message);
+      res.status(500).json({ error: "Failed to load reservations" });
     }
   });
+
+  router.get("/user/:id/past", async (req, res) => {
+    const userId = req.params.id;
+  
+    try {
+      const pastReservations = await getUserPastReservations(userId);
+      res.status(200).json(pastReservations);
+    } catch (err) {
+      console.error("Failed to fetch past reservations:", err.message);
+      res.status(500).json({ error: "Failed to load past reservations" });
+    }
+  });
+  
 
   router.patch("/cancel/:id", async (req, res) => {
     const reservationId = req.params.id;
