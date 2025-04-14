@@ -33,9 +33,11 @@ CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     room_id INTEGER NOT NULL,
+    reservation_id INTEGER UNIQUE REFERENCES reservations(id),
     text TEXT,
     rating INTEGER CHECK (rating >= 1 AND rating <= 5) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
