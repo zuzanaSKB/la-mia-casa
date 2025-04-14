@@ -1,17 +1,17 @@
 import express from 'express';
-import { addReview,  getReviewsByRoom,  getReviewsByUser } from '../models/reviews.js';
+import { addReview,  getReviewsByRoom,  getReviewsByUser, deleteReview, updateReview } from '../models/reviews.js';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { userId, roomId, text, rating } = req.body;
+  const { userId, roomId, text, rating, reservationId } = req.body;
 
   if (!userId || !roomId || !rating) {
     return res.status(400).json({ error: "Chýbajú požadované údaje." });
   }
 
   try {
-    const newReview = await addReview({ userId, roomId, text, rating });
+    const newReview = await addReview({ userId, roomId, text, rating, reservationId });
     res.status(201).json(newReview);
   } catch (error) {
     console.error("Chyba pri vytváraní recenzie:", error);
@@ -54,5 +54,21 @@ router.delete('/:reviewId', async (req, res) => {
     }
   });
   
+  router.put('/:reviewId', async (req, res) => {
+    const { reviewId } = req.params;
+    const { text, rating } = req.body;
+  
+    if (!rating) {
+      return res.status(400).json({ error: "Chýba hodnotenie." });
+    }
+  
+    try {
+      const updated = await updateReview(reviewId, { text, rating });
+      res.status(200).json(updated);
+    } catch (error) {
+      console.error("Chyba pri úprave recenzie:", error);
+      res.status(500).json({ error: "Nepodarilo sa upraviť recenziu." });
+    }
+  });
 
 export default router;

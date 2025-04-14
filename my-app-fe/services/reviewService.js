@@ -1,12 +1,16 @@
 const BASE_URL = "http://localhost:3000/review";
 
-export async function submitReview(userId, roomId, text, rating) {
+//create / update review
+export async function submitReview(userId, roomId, text, rating, reservationId, reviewId = null) {
   try {
-    const response = await fetch(`${BASE_URL}/`, {
-      method: "POST",
+    const method = reviewId ? "PUT" : "POST";
+    const url = reviewId ? `${BASE_URL}/${reviewId}` : `${BASE_URL}/`;
+
+    const response = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ userId, roomId, text, rating }),
+      body: JSON.stringify({ userId, roomId, reservationId, text, rating, reservationId }),
     });
 
     if (!response.ok) {
@@ -21,6 +25,7 @@ export async function submitReview(userId, roomId, text, rating) {
   }
 }
 
+//fetch reviews by user
 export async function fetchReviewsByUser(userId) {
   try {
     const response = await fetch(`${BASE_URL}/user/${userId}`);
@@ -34,6 +39,7 @@ export async function fetchReviewsByUser(userId) {
   }
 }
 
+//fetch reviews by room
 export async function fetchReviewsByRoom(roomId) {
   try {
     const response = await fetch(`${BASE_URL}/room/${roomId}`);
@@ -43,6 +49,25 @@ export async function fetchReviewsByRoom(roomId) {
     return await response.json();
   } catch (err) {
     console.error("Chyba pri načítavaní recenzií pre izbu:", err);
+    throw err;
+  }
+}
+
+//delete review by ID
+export async function deleteReview(reviewId) {
+  try {
+    const response = await fetch(`${BASE_URL}/${reviewId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Nepodarilo sa vymazať recenziu.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba pri mazaní recenzie:", err);
     throw err;
   }
 }
