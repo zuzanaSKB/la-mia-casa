@@ -1,12 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/authService";
-import { fetchUserReservations, cancelReservation } from "../../services/reservationService";
+import { fetchUserReservations, fetchPastReservations, cancelReservation } from "../../services/reservationService";
+import { submitReview, fetchReviewsByUser} from "../../services/reviewService";
+
+const StarRating = ({ rating, setRating }) => {
+  return (
+    <div className="mb-2">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          style={{
+            cursor: "pointer",
+            color: star <= rating ? "#ffc107" : "#e4e5e9",
+            fontSize: "1.5rem",
+          }}
+          onClick={() => setRating(star)}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+};
 
 function DashboardGuest(props) {
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
+  const [pastReservations, setPastReservations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeReviewId, setActiveReviewId] = useState(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [userReviews, setUserReviews] = useState([]);
 
   const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
@@ -21,6 +47,26 @@ function DashboardGuest(props) {
       props.setError(error.message);
     }
   };
+
+  const handleReviewSubmit = async (reservationId) => {
+    const reservation = pastReservations.find(res => res.id === reservationId);
+    if (!reservation) return;
+  
+    try {
+      await submitReview(props.userId, reservation.room_id, reviewText, reviewRating);
+  
+      const updatedReviews = await fetchReviewsByUser(props.userId);
+      setUserReviews(updatedReviews);
+  
+      //reset form
+      setActiveReviewId(null);
+      setReviewRating(0);
+      setReviewText("");
+    } catch (error) {
+      console.error("Chyba pri odosielaní recenzie:", error);
+      props.setError("Nepodarilo sa odoslať recenziu.");
+    }
+  };    
 
   const goToBookingPage = () => {
     props.setError("");
@@ -46,11 +92,16 @@ function DashboardGuest(props) {
   useEffect(() => {
     const loadReservations = async () => {
       try {
-        const data = await fetchUserReservations(props.userId);
-        setReservations(data);
+        const future = await fetchUserReservations(props.userId);
+        const past = await fetchPastReservations(props.userId);
+        const reviews = await fetchReviewsByUser(props.userId);
+
+        setReservations(future);
+        setPastReservations(past);
+        setUserReviews(reviews);
       } catch (error) {
-        console.error("Chyba pri načítavaní rezervácií:", error);
-        props.setError("Nepodarilo sa načítať rezervácie.");
+        console.error("Chyba pri načítavaní rezervácií alebo recenzií:", error);
+        props.setError("Nepodarilo sa načítať údaje.");
       } finally {
         setLoading(false);
       }
@@ -124,11 +175,71 @@ function DashboardGuest(props) {
           </div>
 
           <div className="mb-5">
-            <h4> Moje recenzie</h4>
-            <ul>
-              <li>Izba 1 - 5⭐ - "Úžasné ubytovanie!"</li>
-              <li>Izba 3 - 4⭐ - "Veľmi príjemný pobyt."</li>
-            </ul>
+            <h4>Minulé rezervácie</h4>
+            {loading ? (
+              <p>Načítavam minulé rezervácie...</p>
+            ) : pastReservations.length > 0 ? (
+              <ul>
+                {pastReservations.map((res) => (
+                  <li key={res.id}>
+                    {res.room_name} - {formatDate(res.start_date)} až {formatDate(res.end_date)}
+                    <div className="mt-2">
+                      {activeReviewId === res.id ? (
+                        <div className="mb-3">
+                          <StarRating rating={reviewRating} setRating={setReviewRating} />
+                          <textarea
+                            className="form-control mb-2"
+                            placeholder="Napíšte vašu recenziu..."
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            rows={2}
+                          />
+                          <button
+                            className="btn btn-sm btn-success me-2"
+                            onClick={() => handleReviewSubmit(res.id)}
+                          >
+                            Odoslať recenziu
+                          </button>
+                          <button
+                            className="btn btn-sm btn-secondary"
+                            onClick={() => setActiveReviewId(null)}
+                          >
+                            Zrušiť
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className="btn btn-outline-primary btn-sm ms-2"
+                          onClick={() => setActiveReviewId(res.id)}
+                        >
+                          Pridať recenziu
+                        </button>
+                      )}
+                    </div>
+
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nemáte žiadne minulé rezervácie.</p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <h4>Moje recenzie</h4>
+            {loading ? (
+              <p>Načítavam recenzie...</p>
+            ) : userReviews.length > 0 ? (
+              <ul>
+                {userReviews.map((review) => (
+                  <li key={review.id}>
+                    {review.room_name} - {review.rating}⭐ - "{review.text || "Bez textu"}"
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nemáte žiadne recenzie.</p>
+            )}
           </div>
 
           <div className="mb-5">
