@@ -4,18 +4,18 @@ export async function fetchAvailableRooms(from, to) {
     
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to fetch available rooms");
+      throw new Error(errorData.error || "Nepodarilo sa načítať dostupné izby.");
     }
 
     const data = await response.json();
     return data;
   } catch (err) {
-    console.error("Error fetching available rooms:", err);
-    throw err;
+    console.error("Chyba pri načítavaní dostupných izieb:", err);
+    throw new Error(err.message || "Nastala neočakávaná chyba pri načítavaní izieb.");
   }
 }
 
-export async function fetchAddReservation( userId, roomId, from, to) {
+export async function fetchAddReservation(userId, roomId, from, to) {
   try {
     const response = await fetch("http://localhost:3000/reservation/add", {
       method: "POST",
@@ -25,39 +25,61 @@ export async function fetchAddReservation( userId, roomId, from, to) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create reservation.");
+      const error = await response.json();
+      throw new Error(error.error || "Nepodarilo sa vytvoriť rezerváciu.");
     }
+
     return await response.json();
   } catch (err) {
-    console.error(err);
-    throw new Error("Chyba pri odosielaní rezervácie.");
+    console.error("Chyba pri vytváraní rezervácie:", err);
+    throw new Error(err.message || "Nastala chyba pri odosielaní rezervácie.");
   }
-};
+}
 
 export async function fetchUserReservations(userId) {
-  const response = await fetch(`http://localhost:3000/reservation/user/${userId}`);
-  if (!response.ok) {
-    throw new Error("Chyba pri načítavaní rezervácií.");
+  try {
+    const response = await fetch(`http://localhost:3000/reservation/user/${userId}`);
+    
+    if (!response.ok) {
+      throw new Error("Chyba pri načítavaní rezervácií používateľa.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba:", err);
+    throw new Error(err.message || "Nepodarilo sa načítať rezervácie.");
   }
-  return response.json();
-};
+}
 
 export async function fetchPastReservations(userId) {
-  const response = await fetch(`http://localhost:3000/reservation/user/${userId}/past`);
-  if (!response.ok) {
-    throw new Error("Chyba pri načítavaní minulých rezervácií.");
+  try {
+    const response = await fetch(`http://localhost:3000/reservation/user/${userId}/past`);
+
+    if (!response.ok) {
+      throw new Error("Chyba pri načítavaní minulých rezervácií.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba:", err);
+    throw new Error(err.message || "Nepodarilo sa načítať minulé rezervácie.");
   }
-  return response.json();
 }
 
 export async function cancelReservation(reservationId) {
-  const response = await fetch(`http://localhost:3000/reservation/cancel/${reservationId}`, {
-    method: "PATCH",
-  });
+  try {
+    const response = await fetch(`http://localhost:3000/reservation/cancel/${reservationId}`, {
+      method: "PATCH",
+    });
 
-  if (!response.ok) {
-    throw new Error("Nepodarilo sa zrušiť rezerváciu.");
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Nepodarilo sa zrušiť rezerváciu.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba pri rušení rezervácie:", err);
+    throw new Error(err.message || "Nastala chyba pri zrušení rezervácie.");
   }
-
-  return response.json();
-};
+}

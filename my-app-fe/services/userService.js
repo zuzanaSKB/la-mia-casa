@@ -6,8 +6,6 @@ export const register = async (name, email, phone_number, birth_date, password) 
       body: JSON.stringify({ name, email, phone_number, birth_date, password }),
     });
 
-    //log the response to see what you're getting back
-    console.log("Response Status:", response.status);
     const data = await response.json();
 
     if (!response.ok) {
@@ -18,6 +16,6 @@ export const register = async (name, email, phone_number, birth_date, password) 
     return data; //success response with message
   } catch (error) {
     console.error("Request Failed:", error);
-    throw new Error(error.message || "Network error.");
+    throw new Error(error.message || "Chyba siete.");
   }
 };

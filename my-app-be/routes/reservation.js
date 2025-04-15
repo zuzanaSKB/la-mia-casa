@@ -8,14 +8,14 @@ router.get("/available-rooms", async (req, res) => {
     const { from, to } = req.query;
 
     if (!from || !to) {
-        return res.status(400).json({ error: "Missing 'from' or 'to' date" });
+      return res.status(400).json({ error: "Chýba dátum 'od' alebo 'do'." });
     }
 
     try {
         const rooms = await getAvailableRooms(from, to);
         res.status(200).json(rooms);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Chyba pri načítavaní dostupných izieb." });
     }
 });
 
@@ -24,7 +24,9 @@ router.post("/add", async (req, res) => {
     const { roomId, from, to, userId } = req.body;
   
     if (!roomId || !from || !to || !userId) {
-      return res.status(400).json({ error: "Missing required fields: roomId, from, to, userId" });
+      return res.status(400).json({
+        error: "Chýbajú povinné údaje: roomId, from, to, userId."
+      });
     }
 
     const today = new Date();
@@ -44,7 +46,7 @@ router.post("/add", async (req, res) => {
       const reservation = await addReservation(userId, roomId, from, to);
       res.status(201).json(reservation);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: "Nepodarilo sa vytvoriť rezerváciu." });
     }
   });
 
@@ -60,8 +62,8 @@ router.post("/add", async (req, res) => {
   
       res.status(200).json(reservations);
     } catch (err) {
-      console.error("Failed to fetch reservations:", err.message);
-      res.status(500).json({ error: "Failed to load reservations" });
+      console.error("Chyba pri načítavaní rezervácií:", err.message);
+      res.status(500).json({ error: "Nepodarilo sa načítať rezervácie." });
     }
   });
 
@@ -72,8 +74,8 @@ router.post("/add", async (req, res) => {
       const pastReservations = await getUserPastReservations(userId);
       res.status(200).json(pastReservations);
     } catch (err) {
-      console.error("Failed to fetch past reservations:", err.message);
-      res.status(500).json({ error: "Failed to load past reservations" });
+      console.error("Chyba pri načítavaní minulých rezervácií:", err.message);
+      res.status(500).json({ error: "Nepodarilo sa načítať minulé rezervácie." });
     }
   });
   
@@ -85,8 +87,8 @@ router.post("/add", async (req, res) => {
       const response = await cancelReservation(reservationId);
       res.status(200).json(response);
     } catch (err) {
-      console.error("Error cancelling reservation:", err);
-      res.status(500).json({ error: "Failed to cancel reservation" });
+      console.error("Chyba pri rušení rezervácie:", err);
+      res.status(500).json({ error: "Nepodarilo sa zrušiť rezerváciu." });
     }
   });
 

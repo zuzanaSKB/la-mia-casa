@@ -6,20 +6,26 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
   const { name, email, phone_number, birth_date, password } = req.body;
-  const result = await getUser(email);  //check if user already exists
 
-  if (result.rows.length > 0) {
-      return res.status(400).json({ error: "Email is already in use" });
-  }
+  try {
+    const result = await getUser(email);
 
-  const hashedPassword = await hashPassword(password);  //hash password
+    if (result.rows.length > 0) {
+        return res.status(400).json({ error: "Email je už použitý." });
+    }
 
-  const userResult = await addUser(name, email, phone_number, birth_date, hashedPassword); //add user to DB
+    const hashedPassword = await hashPassword(password);
 
-  if (userResult.success) {
-      res.status(201).json({ message: "User registered successfully" });
-  } else {
-      res.status(400).json({ error: userResult.error || "Error registering user" });
+    const userResult = await addUser(name, email, phone_number, birth_date, hashedPassword);
+
+    if (userResult.success) {
+        res.status(201).json({ message: "Registrácia prebehla úspešne." });
+    } else {
+        res.status(400).json({ error: userResult.error || "Chyba pri registrácii." });
+    }
+  } catch (err) {
+    console.error("Chyba pri registrácii:", err);
+    res.status(500).json({ error: "Interná chyba servera." });
   }
 });
 

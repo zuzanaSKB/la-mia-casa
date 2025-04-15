@@ -8,19 +8,17 @@ async function login(email, password) {
     });
 
     if (!response.ok) {
-      //handle invalid credentials (401)
       if (response.status === 401) {
-        const text = await response.text();
-        throw new Error(text || "Invalid credentials");
+        const text = await response.json();
+        throw new Error(text.error || "Neplatné prihlasovacie údaje.");
       }
       const text = await response.text();
-      throw new Error(text || "Error logging in");
+      throw new Error(text || "Chyba pri prihlasovaní.");
     }
 
-    //parse and return the JSON response if successful
     return await response.json();
   } catch (err) {
-    throw new Error(err.message || "An unexpected error occurred.");
+    throw new Error(err.message || "Nastala neočakávaná chyba.");
   }
 }
 
@@ -33,18 +31,16 @@ async function logout() {
     });
 
     if (!response.ok) {
-      //handle errors during logout (e.g., session doesn't exist)
       if (response.status === 400) {
         const text = await response.text();
-        throw new Error(text || "Bad request - session does not exist");
+        throw new Error(text || "Neplatná požiadavka - session neexistuje.");
       }
       const text = await response.text();
-      throw new Error(text || "Error logging out");
+      throw new Error(text || "Chyba pri odhlasovaní.");
     }
   } catch (err) {
-    throw new Error(err.message || "An unexpected error occurred.");
+    throw new Error(err.message || "Nastala neočakávaná chyba.");
   }
 }
-
 
 export { login, logout };

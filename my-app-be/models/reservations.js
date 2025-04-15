@@ -1,51 +1,51 @@
 import pool from '../config/db.js';
 
 export async function getAllRooms() {
-    try {
-        const result = await pool.query("SELECT * FROM rooms ORDER BY id");
-        return result.rows;
-      } catch (error) {
-        console.error("Error fetching rooms:", error);
-        throw new Error("Could not retrieve rooms from DB");
-      }
+  try {
+    const result = await pool.query("SELECT * FROM rooms ORDER BY id");
+    return result.rows;
+  } catch (error) {
+    console.error("Chyba pri načítavaní izieb:", error);
+    throw new Error("Nepodarilo sa získať izby z databázy");
+  }
 };
 
 export async function getAvailableRooms(from, to) {
-    try {
-      const result = await pool.query(
-        `SELECT *
-         FROM rooms
-         WHERE is_available = true
-           AND id NOT IN (
-             SELECT room_id
-             FROM reservations
-             WHERE status IN ('confirmed', 'pending')
-               AND NOT (
-                 end_date <= $1 OR start_date >= $2
-               )
-           )
-         ORDER BY id`,
-        [from, to]
-      );
-      return result.rows;
-    } catch (err) {
-      console.error("Error checking room availability:", err);
-      throw new Error("Database error: could not fetch available rooms");
-    }
-  };
+  try {
+    const result = await pool.query(
+      `SELECT *
+       FROM rooms
+       WHERE is_available = true
+         AND id NOT IN (
+           SELECT room_id
+           FROM reservations
+           WHERE status IN ('confirmed', 'pending')
+             AND NOT (
+               end_date <= $1 OR start_date >= $2
+             )
+         )
+       ORDER BY id`,
+      [from, to]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error("Chyba pri kontrole dostupnosti izieb:", err);
+    throw new Error("Chyba databázy: Nepodarilo sa načítať dostupné izby");
+  }
+};
 
 export async function addReservation(user_id, room_id, start_date, end_date) {
-    try {
-        await pool.query(
-            `INSERT INTO reservations(user_id, room_id, start_date, end_date, status) 
-             VALUES($1, $2, $3, $4, 'pending')`,
-            [user_id, room_id, start_date, end_date]
-        );
-        return { success: true, message: "Reservation added successfully" };
-    } catch (error) {
-        console.error("Error adding reservation:", error);
-        return { success: false, error: error.message };
-    }
+  try {
+    await pool.query(
+      `INSERT INTO reservations(user_id, room_id, start_date, end_date, status) 
+       VALUES($1, $2, $3, $4, 'pending')`,
+      [user_id, room_id, start_date, end_date]
+    );
+    return { success: true, message: "Rezervácia bola úspešne pridaná" };
+  } catch (error) {
+    console.error("Chyba pri pridávaní rezervácie:", error);
+    return { success: false, error: "Nepodarilo sa vytvoriť rezerváciu" };
+  }
 };
 
 export async function getUserReservations(userId) {
@@ -71,8 +71,8 @@ export async function getUserReservations(userId) {
 
     return result.rows;
   } catch (error) {
-    console.error("Error fetching active reservations for user:", error);
-    throw new Error("Could not fetch active reservations for user");
+    console.error("Chyba pri načítavaní aktívnych rezervácií používateľa:", error);
+    throw new Error("Nepodarilo sa načítať aktívne rezervácie používateľa");
   }
 };
 
@@ -99,10 +99,10 @@ export async function getUserPastReservations(userId) {
 
     return result.rows;
   } catch (error) {
-    console.error("Error fetching past reservations for user:", error);
-    throw new Error("Could not fetch past reservations for user");
+    console.error("Chyba pri načítavaní minulých rezervácií používateľa:", error);
+    throw new Error("Nepodarilo sa načítať minulé rezervácie používateľa");
   }
-}
+};
 
 export async function cancelReservation(reservationId) {
   try {
@@ -112,12 +112,12 @@ export async function cancelReservation(reservationId) {
     );
 
     if (result.rows.length === 0) {
-      throw new Error("Reservation not found");
+      throw new Error("Rezervácia nebola nájdená");
     }
 
-    return { success: true, message: "Reservation canceled successfully" };
+    return { success: true, message: "Rezervácia bola úspešne zrušená" };
   } catch (error) {
-    console.error("Error cancelling reservation:", error);
-    throw new Error("Could not cancel reservation");
+    console.error("Chyba pri rušení rezervácie:", error);
+    throw new Error("Nepodarilo sa zrušiť rezerváciu");
   }
-}
+};

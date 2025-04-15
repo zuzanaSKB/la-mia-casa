@@ -24,9 +24,9 @@ export async function addUser(name, email, phone_number, birth_date, password) {
              VALUES($1, $2, $3, $4, $5, 'guest')`,
             [name, email, phone_number, birth_date, password]
         );
-        return { success: true, message: "User added successfully" };
+        return { success: true, message: "Používateľ bol úspešne pridaný." };
     } catch (error) {
-        console.error("Error adding user:", error);
-        return { success: false, error: error.message };
+        console.error("Chyba pri pridávaní používateľa:", error);
+        return { success: false, error: "Nepodarilo sa pridať používateľa: " + error.message };
     }
-};
+}

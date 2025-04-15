@@ -21,20 +21,20 @@ router.post("/login", async (req, res) => {
                 console.log("Session created:", req.session);
 
                 return res.status(200).send({
-                    message: 'Logged in successfully',
+                    message: 'Prihlásenie prebehlo úspešne.',
                     id: user.id,
                     role: user.role,
                     name: user.name,
                     email: user.email
                 });
             } else {
-                return res.status(401).send({ error: 'Invalid credentials' });
+                return res.status(401).send({ error: 'Neplatné prihlasovacie údaje.' });
             }
         } else {
-            return res.status(401).send({ error: 'User does not exist' });
+            return res.status(401).send({ error: 'Používateľ s daným emailom neexistuje.' });
         }
     } catch (e) {
-        console.error("Error during login:", e);
+        console.error("Chyba počas prihlasovania:", e);
         return res.status(500).send({ error: 'Internal server error' });
     }
 });
@@ -53,7 +53,7 @@ router.delete("/logout", async (req, res) => {
                 });
             });
             res.clearCookie(config.session.cookieName);  //clear cookie in browser
-            return res.status(200).send({ message: 'Logged out successfully' });
+            return res.status(200).send({ message: 'Úspešné odhlásenie.' });
         } else {
             return res.status(400).send({ error: 'Session does not exist' });
         }
