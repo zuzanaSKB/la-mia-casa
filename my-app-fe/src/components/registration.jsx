@@ -72,7 +72,7 @@ function Registration() {
             type="text"
             name="name"
             className="form-control"
-            placeholder="Meno"
+            placeholder="Meno Priezvisko"
             value={formData.name}
             onChange={handleChange}
             required
@@ -95,14 +95,18 @@ function Registration() {
             onChange={handleChange}
             required
           />
+          <div className="d-flex flex-column">
+          <label className="form-label mb-1 text-white" htmlFor="birth_date">Dátum narodenia</label>
           <input
             type="date"
             name="birth_date"
+            id="birth_date"
             className="form-control"
             value={formData.birth_date}
             onChange={handleChange}
             required
           />
+        </div>
           <input
             type="password"
             name="password"
