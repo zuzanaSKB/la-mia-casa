@@ -74,10 +74,10 @@ function DashboardGuest(props) {
   
       const updatedReviews = await fetchReviewsByUser(props.userId);
       setUserReviews(updatedReviews);
-  
       setActiveReviewId(null);
       setReviewRating(0);
       setReviewText("");
+      props.setError("");
     } catch (error) {
       console.error("Chyba pri odosielaní recenzie:", error);
       props.setError("Nepodarilo sa odoslať recenziu.");
@@ -150,14 +150,14 @@ function DashboardGuest(props) {
         position: "relative",
       }}
     >
-      <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+      <div style={{ position: "fixed", top: "10px", right: "10px", zIndex: 999 }}>
         <button className="btn btn-danger btn-sm" onClick={handleLogout}>
           Odhlásiť sa
         </button>
       </div>
 
       <div
-        className="d-flex flex-column justify-content-center align-items-center"
+        className="d-flex flex-column justify-content-center align-items-center py-5"
         style={{ minHeight: "100vh" }}
       >
         <div
@@ -171,7 +171,14 @@ function DashboardGuest(props) {
             maxWidth: "800px",
           }}
         >
-          <h1 className="mb-4 text-center">Vitajte späť!</h1>
+          {props.error && (
+            <div className="alert alert-danger mt-2">
+              {props.error}
+            </div>
+          )}
+          <h1 className="mb-4 text-center">
+            Vitajte späť, {props.username ? props.username : "používateľ"}!
+          </h1>
 
           <div className="mb-5">
             <h4>Moje rezervácie</h4>

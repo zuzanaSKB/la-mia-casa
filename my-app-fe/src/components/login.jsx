@@ -27,6 +27,7 @@ function Login(props) {
       props.setAuthStatus(true);
       props.setUserRole(data.role);
       props.setUserId(data.id);
+      props.setUsername(data.name);
       
       //navigate based on user role
       if (data.role === 'guest') {
@@ -73,7 +74,11 @@ function Login(props) {
             onChange={handlePasswordChange}
             required
           />
-          {props.error && <div className="text-danger">{props.error}</div>}
+          {props.error && (
+            <div className="alert alert-danger mt-2">
+              {props.error}
+            </div>
+          )}
           <button type="submit" className="btn btn-success w-100">
             Prihlásiť sa
           </button>

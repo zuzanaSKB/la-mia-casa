@@ -15,6 +15,7 @@ function App() {
   const [authStatus, setAuthStatus] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [username, setUsername] = useState('');
 
   return (
     <BrowserRouter>
@@ -29,6 +30,7 @@ function App() {
                 setAuthStatus={setAuthStatus}
                 setUserRole={setUserRole}
                 setUserId={setUserId}
+                setUsername={setUsername}
               />
             } 
           />
@@ -41,6 +43,7 @@ function App() {
                 setAuthStatus={setAuthStatus}
                 setUserRole={setUserRole}
                 setUserId={setUserId}
+                setUsername={setUsername}
               />
             }
           />
@@ -55,6 +58,7 @@ function App() {
                   setAuthStatus={setAuthStatus}
                   setUserRole={setUserRole}
                   userId={userId}
+                  username={username}
                 />
               </ProtectedRoute>
             }
@@ -76,9 +80,11 @@ function App() {
             element={
               <ProtectedRoute authStatus={authStatus} allowedRole="guest" userRole={userRole}>
                 <BookRoomForm
+                  userId={userId}
                   error={error}
                   setError={setError}
-                  userId={userId}
+                  setAuthStatus={setAuthStatus}
+                  setUserRole={setUserRole}
                 />
               </ProtectedRoute>
             }

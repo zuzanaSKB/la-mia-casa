@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Login from "./login";
 import Registration from "./registration";
 
-function Home( {error, setError, setAuthStatus, setUserRole, setUserId}) {
+function Home( {error, setError, setAuthStatus, setUserRole, setUserId, setUsername}) {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
 
@@ -65,6 +65,7 @@ function Home( {error, setError, setAuthStatus, setUserRole, setUserId}) {
                 setAuthStatus={setAuthStatus}
                 setUserRole={setUserRole}
                 setUserId={setUserId}
+                setUsername={setUsername}
               />}
         {showRegistration && <Registration />}
       </div>
