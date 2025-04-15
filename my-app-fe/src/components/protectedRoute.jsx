@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 function ProtectedRoute({ authStatus, allowedRole, userRole, children }) {
-  //if not authenticated, redirect to login
+  //if not authenticated, redirect to home
   if (!authStatus) {
     return <Navigate to="/" />;
   }

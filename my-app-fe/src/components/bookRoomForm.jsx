@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAvailableRooms, fetchAddReservation } from "../../services/reservationService";
+import { logout } from "../../services/authService";
 
 function getNextDate(dateStr) {
   const date = new Date(dateStr);
@@ -8,7 +9,7 @@ function getNextDate(dateStr) {
   return date.toISOString().split("T")[0];
 }
 
-function BookRoomForm({ userId, error, setError }) {
+function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
   const navigate = useNavigate();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -18,6 +19,17 @@ function BookRoomForm({ userId, error, setError }) {
   const [loading, setLoading] = useState(false);
   const [noRooms, setNoRooms] = useState(false);
   const today = new Date().toISOString().split("T")[0];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setAuthStatus(false);
+      setUserRole(null);
+      navigate('/');
+    } catch (error) {
+      setError("Chyba pri odhlasovaní.");
+    }
+  };
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -69,12 +81,15 @@ function BookRoomForm({ userId, error, setError }) {
       className="container d-flex justify-content-center align-items-center"
       style={{
         minHeight: "100vh",
-        backgroundImage: "url('/watercolour painting-1.webp')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        position: "relative",
       }}
     >
+      <div style={{ position: "fixed", top: "10px", right: "10px", zIndex: 999 }}>
+        <button className="btn btn-danger btn-sm" onClick={handleLogout}>
+          Odhlásiť sa
+        </button>
+      </div>
+      
       <div
         className="booking-box p-4"
         style={{
@@ -126,7 +141,11 @@ function BookRoomForm({ userId, error, setError }) {
           </select>
 
           {loading && <p className="text-white">Načítavam dostupné izby...</p>}
-          {error && <p className="text-danger">{error}</p>}
+          {error && (
+            <div className="alert alert-danger mt-2">
+              {error}
+            </div>
+          )}
 
           {people > 0 && !loading && noRooms && (
             <p className="text-white text-center">Žiadne dostupné izby pre vybraný dátum a počet osôb.</p>
