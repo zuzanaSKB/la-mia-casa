@@ -10,7 +10,6 @@ export async function addReview({ userId, roomId, text, rating, reservationId })
   if (existing.rows.length > 0) {
     throw new Error("Recenzia pre túto rezerváciu už existuje.");
   }
-  console.log("here");
   const result = await pool.query(
     `INSERT INTO reviews (user_id, room_id, text, rating, reservation_id)
      VALUES ($1, $2, $3, $4, $5)
