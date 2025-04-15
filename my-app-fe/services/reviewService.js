@@ -6,14 +6,29 @@ export async function submitReview(userId, roomId, text, rating, reservationId, 
     const method = reviewId ? "PUT" : "POST";
     const url = reviewId ? `${BASE_URL}/${reviewId}` : `${BASE_URL}/`;
 
+    console.log("Review payload:", {
+      userId,
+      roomId,
+      text,
+      rating,
+      reservationId
+    });
+    
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ userId, roomId, reservationId, text, rating, reservationId }),
+      body: JSON.stringify({
+        userId,
+        roomId,
+        text,
+        rating,
+        reservationId
+      })      
     });
 
     if (!response.ok) {
+      console.log(response);
       const errorData = await response.json();
       throw new Error(errorData.error || "Nepodarilo sa odoslať recenziu.");
     }

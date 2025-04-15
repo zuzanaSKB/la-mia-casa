@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   const { userId, roomId, text, rating, reservationId } = req.body;
 
-  if (!userId || !roomId || !rating) {
+  if (!userId || !roomId || rating === undefined || rating === null) {
     return res.status(400).json({ error: "Chýbajú požadované údaje." });
   }
 
