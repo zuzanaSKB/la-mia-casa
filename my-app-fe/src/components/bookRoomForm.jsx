@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAvailableRooms, fetchAddReservation } from "../../services/reservationService";
 
+function getNextDate(dateStr) {
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().split("T")[0];
+}
+
 function BookRoomForm({ userId, error, setError }) {
   const navigate = useNavigate();
   const [fromDate, setFromDate] = useState("");
@@ -11,6 +17,7 @@ function BookRoomForm({ userId, error, setError }) {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [noRooms, setNoRooms] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -88,6 +95,7 @@ function BookRoomForm({ userId, error, setError }) {
             className="form-control"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
+            min={today}
             required
           />
 
@@ -97,6 +105,7 @@ function BookRoomForm({ userId, error, setError }) {
             className="form-control"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
+            min={fromDate ? getNextDate(fromDate) : ""}
             required
           />
 

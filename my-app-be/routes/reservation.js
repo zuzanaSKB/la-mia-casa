@@ -26,6 +26,19 @@ router.post("/add", async (req, res) => {
     if (!roomId || !from || !to || !userId) {
       return res.status(400).json({ error: "Missing required fields: roomId, from, to, userId" });
     }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+  
+    if (startDate < today || endDate < today) {
+      return res.status(400).json({ error: "Nemôžete vytvoriť rezerváciu v minulosti." });
+    }
+  
+    if (startDate > endDate) {
+      return res.status(400).json({ error: "Dátum odchodu musí byť po dátume príchodu." });
+    }
   
     try {
       const reservation = await addReservation(userId, roomId, from, to);
