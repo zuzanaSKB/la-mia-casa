@@ -83,3 +83,42 @@ export async function cancelReservation(reservationId) {
     throw new Error(err.message || "Nastala chyba pri zrušení rezervácie.");
   }
 }
+
+// admin
+
+export async function fetchAllReservations() {
+  try {
+    const response = await fetch("http://localhost:3000/reservation/all", {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Nepodarilo sa načítať všetky rezervácie.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    throw new Error(err.message || "Chyba pri načítaní rezervácií.");
+  }
+}
+
+export async function updateReservationStatus(reservationId, newStatus) {
+  try {
+    const response = await fetch(`http://localhost:3000/reservation/status/${reservationId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Nepodarilo sa aktualizovať stav rezervácie.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba pri aktualizácii stavu rezervácie:", err);
+    throw new Error(err.message || "Nastala chyba pri zmene stavu rezervácie.");
+  }
+}

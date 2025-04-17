@@ -121,3 +121,53 @@ export async function cancelReservation(reservationId) {
     throw new Error("Nepodarilo sa zrušiť rezerváciu");
   }
 };
+
+//admin
+
+export async function getAllReservations() {
+  try {
+    const currentDate = new Date();
+
+    const query = `
+      SELECT r.*, u.name AS user_name, rm.name AS room_name
+      FROM reservations r
+      JOIN users u ON u.id = r.user_id
+      JOIN rooms rm ON rm.id = r.room_id
+      WHERE r.end_date >= $1
+      ORDER BY r.start_date DESC
+    `;
+
+    const result = await pool.query(query, [currentDate]);
+
+    return result.rows;
+  } catch (error) {
+    console.error("Chyba pri načítavaní všetkých rezervácií:", error);
+    throw new Error("Nepodarilo sa načítať všetky rezervácie");
+  }
+}
+
+export async function updateReservationStatus(reservationId, newStatus) {
+  try {
+    const validStatuses = ['pending', 'confirmed', 'canceled'];
+    if (!validStatuses.includes(newStatus)) {
+      throw new Error("Neplatný stav rezervácie.");
+    }
+
+    const result = await pool.query(
+      `UPDATE reservations 
+       SET status = $1 
+       WHERE id = $2 
+       RETURNING *`,
+      [newStatus, reservationId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error("Rezervácia nebola nájdená");
+    }
+
+    return { success: true, message: "Stav rezervácie bol aktualizovaný", reservation: result.rows[0] };
+  } catch (error) {
+    console.error("Chyba pri aktualizácii stavu rezervácie:", error);
+    throw new Error("Nepodarilo sa aktualizovať stav rezervácie");
+  }
+}

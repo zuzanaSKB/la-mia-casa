@@ -1,5 +1,6 @@
 import express from "express";
-import { getAvailableRooms, addReservation, getUserReservations, getUserPastReservations, cancelReservation } from "../models/reservations.js";
+import { getAvailableRooms, addReservation, getUserReservations, getUserPastReservations, cancelReservation, getAllReservations, updateReservationStatus } from "../models/reservations.js";
+import { getUserById } from "../models/users.js";
 
 const router = express.Router();
 
@@ -92,5 +93,46 @@ router.post("/add", async (req, res) => {
     }
   });
 
+  //admin
+
+  router.get("/all", async (req, res) => {
+    try {
+      const user = await getUserById(req.session.userId);
+      if (!user || user.role !== "admin") {
+        return res.status(403).json({ error: "Prístup zamietnutý." });
+      }
+
+      const reservations = await getAllReservations();
+      if (reservations.length === 0) {
+        return res.status(200).json([]);
+      }
+
+      res.status(200).json(reservations);
+    } catch (err) {
+      console.error("Chyba pri načítavaní všetkých rezervácií:", err.message);
+      res.status(500).json({ error: "Nepodarilo sa načítať rezervácie." });
+    }
+  });
+
+  router.patch("/status/:id", async (req, res) => {
+    const reservationId = parseInt(req.params.id, 10);
+    const { status } = req.body;
+  
+    if (isNaN(reservationId)) {
+      return res.status(400).json({ error: "Neplatné ID rezervácie." });
+    }
+  
+    if (!status) {
+      return res.status(400).json({ error: "Status je povinný." });
+    }
+  
+    try {
+      const updated = await updateReservationStatus(reservationId, status);
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ error: err.message || "Chyba pri aktualizácii stavu." });
+    }
+  });
+  
 
 export default router;

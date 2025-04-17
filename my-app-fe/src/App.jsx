@@ -71,6 +71,8 @@ function App() {
                   error={error}
                   setError={setError}
                   setAuthStatus={setAuthStatus}
+                  setUserRole={setUserRole}
+                  username={username}
                 />
               </ProtectedRoute>
             }
