@@ -83,7 +83,7 @@ function DashboardAdmin(props) {
             {allReservations.length === 0 ? (
               <p>Žiadne rezervácie.</p>
             ) : (
-              <div className="table-responsive">
+              <div className="table-responsive" style={{ maxHeight: "400px", overflowY: "auto" }}>
                 <table className="table table-sm table-hover mb-0 soft-table">
                   <thead>
                     <tr>
