@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAvailableRooms, fetchAddReservation } from "../../services/reservationService";
+import { fetchAddReservation } from "../../services/reservationService";
+import { fetchAvailableRooms } from "../../services/roomService";
 import { logout } from "../../services/authService";
 
 function getNextDate(dateStr) {

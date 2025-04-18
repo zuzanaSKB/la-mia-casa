@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Tooltip } from "bootstrap";
 import { logout } from "../../services/authService";
 import { fetchAllReservations, updateReservationStatus } from "../../services/reservationService";
+import { fetchAllRooms, updateRoomPrice, updateRoomAvailability } from "../../services/roomService";
 
 function DashboardAdmin(props) {
   const navigate = useNavigate();
   const [allReservations, setAllReservations] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
+  const [rooms, setRooms] = useState([]);
+  const [roomLoadingId, setRoomLoadingId] = useState(null);
+
 
   const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
@@ -29,17 +34,29 @@ function DashboardAdmin(props) {
   };
 
   useEffect(() => {
-    const loadReservations = async () => {
+    const loadData = async () => {
       try {
-        const data = await fetchAllReservations();
-        setAllReservations(data);
+        const [reservations, roomList] = await Promise.all([
+          fetchAllReservations(),
+          fetchAllRooms(),
+        ]);
+        setAllReservations(reservations);
+        setRooms(roomList);
       } catch (err) {
         props.setError(err.message);
       }
     };
-
-    loadReservations();
+  
+    loadData();
   }, []);
+
+  useEffect(() => {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach((tooltipTriggerEl) => {
+      new Tooltip(tooltipTriggerEl);
+    });
+  }, [rooms]); 
+  
 
   return (
     <div
@@ -171,7 +188,83 @@ function DashboardAdmin(props) {
 
           <section className="mb-5">
             <h4>Správa izieb</h4>
-            <p>Prehľad a úprava dostupných izieb...</p>
+            <div className="table-responsive" style={{ maxHeight: "300px", overflowY: "auto" }}>
+              <table className="table table-sm table-hover soft-table">
+                <thead>
+                  <tr>
+                    <th>Názov</th>
+                    <th>Cena (€)</th>
+                    <th>Dostupná</th>
+                    <th>Uložiť</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rooms.map((room) => (
+                    <tr key={room.id}>
+                      <td>
+                        <span
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
+                          title={room.description}
+                          style={{ cursor: "help", textDecoration: "underline dotted" }}
+                        >
+                          {room.name}
+                        </span>
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          className="form-control form-control-sm"
+                          value={room.price_per_night}
+                          onChange={(e) =>
+                            setRooms((prev) =>
+                              prev.map((r) =>
+                                r.id === room.id ? { ...r, price_per_night: e.target.value } : r
+                              )
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={room.is_available}
+                          onChange={(e) =>
+                            setRooms((prev) =>
+                              prev.map((r) =>
+                                r.id === room.id ? { ...r, is_available: e.target.checked } : r
+                              )
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-success btn-sm"
+                          disabled={roomLoadingId === room.id}
+                          onClick={async () => {
+                            try {
+                              setRoomLoadingId(room.id);
+                              await updateRoomPrice(room.id, room.price_per_night);
+                              await updateRoomAvailability(room.id, room.is_available);
+                              alert("Izba bola úspešne aktualizovaná.");
+                            } catch (err) {
+                              props.setError(err.message);
+                            } finally {
+                              setRoomLoadingId(null);
+                            }
+                          }}
+                        >
+                          Uložiť
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </section>
 
           <section className="mb-5">
