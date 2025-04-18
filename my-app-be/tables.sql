@@ -25,6 +25,7 @@ CREATE TABLE reservations (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
     status VARCHAR(10) CHECK (status IN ('pending', 'confirmed', 'canceled')) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
