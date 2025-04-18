@@ -1,11 +1,11 @@
 import pool from '../config/db.js';
 
-export async function addReservation(user_id, room_id, start_date, end_date) {
+export async function addReservation(user_id, room_id, start_date, end_date, price) {
   try {
     await pool.query(
-      `INSERT INTO reservations(user_id, room_id, start_date, end_date, status) 
-       VALUES($1, $2, $3, $4, 'pending')`,
-      [user_id, room_id, start_date, end_date]
+      `INSERT INTO reservations(user_id, room_id, start_date, end_date, price, status) 
+       VALUES($1, $2, $3, $4, $5, 'pending')`,
+      [user_id, room_id, start_date, end_date, price]
     );
     return { success: true, message: "Rezervácia bola úspešne pridaná" };
   } catch (error) {
@@ -25,7 +25,8 @@ export async function getUserReservations(userId) {
          rooms.name AS room_name, 
          r.start_date AS start_date, 
          r.end_date AS end_date, 
-         r.status
+         r.status,
+         r.price
        FROM reservations r
        JOIN rooms ON r.room_id = rooms.id
        WHERE r.user_id = $1
@@ -53,7 +54,8 @@ export async function getUserPastReservations(userId) {
          rooms.name AS room_name,
          r.start_date, 
          r.end_date, 
-         r.status
+         r.status,
+         r.price
        FROM reservations r
        JOIN rooms ON r.room_id = rooms.id
        WHERE r.user_id = $1

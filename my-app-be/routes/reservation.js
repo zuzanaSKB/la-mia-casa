@@ -6,11 +6,11 @@ const router = express.Router();
 
 //add room reservation
 router.post("/add", async (req, res) => {
-    const { roomId, from, to, userId } = req.body;
+    const { roomId, from, to, userId, price } = req.body;
   
-    if (!roomId || !from || !to || !userId) {
+    if (!roomId || !from || !to || !userId || price === undefined) {
       return res.status(400).json({
-        error: "Chýbajú povinné údaje: roomId, from, to, userId."
+        error: "Chýbajú povinné údaje: roomId, from, to, userId, price."
       });
     }
 
@@ -28,7 +28,7 @@ router.post("/add", async (req, res) => {
     }
   
     try {
-      const reservation = await addReservation(userId, roomId, from, to);
+      const reservation = await addReservation(userId, roomId, from, to, price);
       res.status(201).json(reservation);
     } catch (err) {
       res.status(500).json({ error: "Nepodarilo sa vytvoriť rezerváciu." });
