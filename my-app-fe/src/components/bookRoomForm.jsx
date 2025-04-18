@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { fetchAddReservation } from "../../services/reservationService";
 import { fetchAvailableRooms } from "../../services/roomService";
 import { logout } from "../../services/authService";
+import { expireBirthdayDiscount } from "../../services/birthdayDiscountService";
+
 
 function getNextDate(dateStr) {
   const date = new Date(dateStr);
@@ -10,7 +12,7 @@ function getNextDate(dateStr) {
   return date.toISOString().split("T")[0];
 }
 
-function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
+function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole, hasBirthdayDiscount, setHasBirthdayDiscount}) {
   const navigate = useNavigate();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -19,6 +21,7 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [noRooms, setNoRooms] = useState(false);
+  const [applyDiscount, setApplyDiscount] = useState(false);
   const today = new Date().toISOString().split("T")[0];
 
   const handleLogout = async () => {
@@ -41,8 +44,7 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
         const availableRooms = await fetchAvailableRooms(fromDate, toDate);
         setRooms(availableRooms);
         setError("");
-        
-        //check if no rooms available
+
         const suitableRooms = availableRooms.filter((room) => room.capacity >= people);
         setNoRooms(suitableRooms.length === 0);
       } catch (err) {
@@ -59,23 +61,39 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!fromDate || !toDate || !people || !selectedRoom) {
       setError("Vyplňte všetky povinné polia.");
       return;
     }
-  
+
     try {
-      await fetchAddReservation(userId, selectedRoom, fromDate, toDate);
-  
+      await fetchAddReservation(userId, selectedRoom, fromDate, toDate, finalPrice);
+
+      if (applyDiscount && hasBirthdayDiscount) {
+        try {
+          await expireBirthdayDiscount(userId);
+          setHasBirthdayDiscount(null);
+          console.log("Birthday discount expired after booking.");
+        } catch (expireError) {
+          console.error("Failed to expire birthday discount:", expireError);
+        }
+      }
+
       alert("Rezervácia bola úspešne odoslaná!");
       navigate("/dashboardGuest");
     } catch (err) {
       setError(err.message || "Chyba pri odosielaní rezervácie.");
     }
-  };  
+  };
 
   const filteredRooms = rooms.filter((room) => room.capacity >= people);
+  const selectedRoomDetails = rooms.find((room) => room.id === Number(selectedRoom));
+  const numberOfNights = fromDate && toDate
+    ? (new Date(toDate).getTime() - new Date(fromDate).getTime()) / (1000 * 3600 * 24)
+    : 0;
+  const basePrice = selectedRoomDetails ? selectedRoomDetails.price_per_night * numberOfNights : 0;
+  const finalPrice = applyDiscount && hasBirthdayDiscount ? basePrice * 0.8 : basePrice;
 
   return (
     <div
@@ -90,7 +108,7 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
           Odhlásiť sa
         </button>
       </div>
-      
+
       <div
         className="booking-box p-4"
         style={{
@@ -153,19 +171,49 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole }) {
           )}
 
           {people > 0 && !loading && !noRooms && (
-            <select
-              className="form-control"
-              value={selectedRoom}
-              onChange={(e) => setSelectedRoom(e.target.value)}
-              required
-            >
-              <option value="">Vyberte izbu</option>
-              {filteredRooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {room.name} — {room.description} ({room.price_per_night}€ / noc)
-                </option>
-              ))}
-            </select>
+            <>
+              <select
+                className="form-control"
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value)}
+                required
+              >
+                <option value="">Vyberte izbu</option>
+                {filteredRooms.map((room) => (
+                  <option key={room.id} value={room.id}>
+                    {room.name} — {room.description} ({room.price_per_night}€ / noc)
+                  </option>
+                ))}
+              </select>
+
+              {hasBirthdayDiscount && (
+                <div className="mt-3">
+                  <label className="text-white">
+                    <input
+                      type="checkbox"
+                      checked={applyDiscount}
+                      onChange={() => setApplyDiscount(!applyDiscount)}
+                    />
+                    Aplikovať narodeninovú zľavu (20%)
+                  </label>
+                </div>
+              )}
+
+              {selectedRoomDetails && numberOfNights > 0 && (
+                <div className="text-white mt-3">
+                  <strong>
+                    Cena za {numberOfNights}{" "}
+                    {numberOfNights === 1
+                      ? "noc"
+                      : numberOfNights >= 2 && numberOfNights <= 4
+                      ? "noci"
+                      : "nocí"}
+                    : {finalPrice.toFixed(2)} €
+                    {applyDiscount && hasBirthdayDiscount ? " (s narodeninovou zľavou)" : ""}
+                  </strong>
+                </div>
+              )}
+            </>
           )}
 
           {!noRooms && (

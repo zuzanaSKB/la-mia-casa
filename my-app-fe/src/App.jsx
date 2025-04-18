@@ -8,7 +8,8 @@ import DashboardGuest from "./components/dashboardGuest";
 import DashboardAdmin from "./components/dashboardAdmin";
 import BookRoomForm from "./components/bookRoomForm";
 import ProtectedRoute from "./components/protectedRoute";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getBirthdayDiscount } from "../services/birthdayDiscountService";
 
 function App() {
   const [error, setError] = useState('');
@@ -16,13 +17,40 @@ function App() {
   const [userRole, setUserRole] = useState(null);
   const [userId, setUserId] = useState(null);
   const [username, setUsername] = useState('');
+  const [birthdayDiscount, setHasBirthdayDiscount] = useState(null);
+
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      if (userId && userRole !== 'admin') {
+        try {
+          const response = await getBirthdayDiscount(userId);
+          console.log("discount response: ", response);
+  
+          if (response && response.discount) {
+            setHasBirthdayDiscount(response.discount);
+          } else {
+            setHasBirthdayDiscount(null);
+            console.info("No valid birthday discount available.");
+          }
+  
+        } catch (error) {
+          console.error("Unexpected error fetching birthday discount:", error);
+          setError("Chyba pri načítavaní zľavy.");
+        }
+      } else {
+        setHasBirthdayDiscount(null);
+      }
+    };
+  
+    fetchDiscount();
+  }, [userId, userRole]);  
 
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <Home
                 error={error}
@@ -32,7 +60,7 @@ function App() {
                 setUserId={setUserId}
                 setUsername={setUsername}
               />
-            } 
+            }
           />
           <Route
             path="/login"
@@ -59,6 +87,7 @@ function App() {
                   setUserRole={setUserRole}
                   userId={userId}
                   username={username}
+                  hasBirthdayDiscount={birthdayDiscount} // Pass the discount here
                 />
               </ProtectedRoute>
             }
@@ -87,6 +116,8 @@ function App() {
                   setError={setError}
                   setAuthStatus={setAuthStatus}
                   setUserRole={setUserRole}
+                  hasBirthdayDiscount={birthdayDiscount}
+                  setHasBirthdayDiscount={setHasBirthdayDiscount}
                 />
               </ProtectedRoute>
             }

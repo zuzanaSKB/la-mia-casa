@@ -270,11 +270,6 @@ function DashboardAdmin(props) {
           </section>
 
           <section className="mb-5">
-            <h4>Správa používateľov</h4>
-            <p>Prehľad hostí a ich aktivít...</p>
-          </section>
-
-          <section className="mb-5">
             <h4>Recenzie</h4>
             {reviews.length === 0 ? (
               <p>Žiadne recenzie.</p>
@@ -306,11 +301,6 @@ function DashboardAdmin(props) {
                 </table>
               </div>
             )}
-          </section>
-
-          <section className="mb-3">
-            <h4>Narodeninové zľavy</h4>
-            <p>Narodeninové zľavy...</p>
           </section>
         </div>
       </div>

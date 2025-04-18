@@ -1,9 +1,9 @@
-export async function fetchAddReservation(userId, roomId, from, to) {
+export async function fetchAddReservation(userId, roomId, from, to, finalRoomPrice) {
   try {
     const response = await fetch("http://localhost:3000/reservation/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, roomId, from, to }),
+      body: JSON.stringify({ userId, roomId, from, to, price: finalRoomPrice }),
       credentials: "include",
     });
 

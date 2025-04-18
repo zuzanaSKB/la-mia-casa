@@ -33,7 +33,7 @@ function DashboardGuest(props) {
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [userReviews, setUserReviews] = useState([]);
-
+  
   const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
   const getReviewByReservationId = (reservationId) => {
@@ -126,7 +126,7 @@ function DashboardGuest(props) {
         setPastReservations(past);
         setUserReviews(reviews);
       } catch (error) {
-        console.error("Chyba pri načítavaní rezervácií alebo recenzií:", error);
+        console.error("Chyba pri načítavaní rezervácií, recenzií alebo narodeninovej zľavy :", error);
         props.setError("Nepodarilo sa načítať údaje.");
       } finally {
         setLoading(false);
@@ -189,10 +189,9 @@ function DashboardGuest(props) {
                 {reservations.map((res) => (
                   <li key={res.id}>
                     {res.room_name} - {formatDate(res.start_date)} až {formatDate(res.end_date)} -{" "}
-                    {res.status === "confirmed"
-                      ? "Potvrdené"
-                      : "Čaká na potvrdenie"} 
+                    {res.status === "confirmed" ? "Potvrdené" : "Čaká na potvrdenie"} 
                     {" "}
+                    <strong>– {Number(res.price).toFixed(2)} €</strong>
                     <button
                       className="btn btn-outline-danger btn-sm ms-2"
                       onClick={() => handleCancel(res.id)}
@@ -328,7 +327,16 @@ function DashboardGuest(props) {
 
           <div className="mb-5">
             <h4> Narodeninová zľava</h4>
-            <p>Získavate 20% zľavu! Platná do 30.04.2025.</p>
+            {props.hasBirthdayDiscount && new Date(props.hasBirthdayDiscount.validity) > new Date() ? (
+              <p>
+                Získavate <strong>{props.hasBirthdayDiscount.discount}% zľavu!</strong> Platná do{" "}
+                <strong>{formatDate(props.hasBirthdayDiscount.validity)}</strong>.
+              </p>
+            ) : (
+              <p>
+                Aktuálne nemáte dostupnú narodeninovú zľavu alebo ste ju už využili.
+              </p>
+            )}
           </div>
 
           <div className="text-center">

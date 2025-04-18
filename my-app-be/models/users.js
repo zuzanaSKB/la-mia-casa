@@ -1,5 +1,5 @@
 import pool from '../config/db.js';
-
+import { createOrUpdateBirthdayDiscount } from './birthdayDiscounts.js';
 
 export const getUser = (email) => {
     return pool.query(
@@ -27,17 +27,27 @@ export async function getUserById(id) {
     return result.rows[0];
   }  
 
-export async function addUser(name, email, phone_number, birth_date, password) {
+  export async function addUser(name, email, phone_number, birth_date, password) {
     try {
-        //insert user data into DB
-        await pool.query(
+        // insert user into DB and get the user ID
+        const result = await pool.query(
             `INSERT INTO users (name, email, phone_number, birth_date, password, role)
-             VALUES($1, $2, $3, $4, $5, 'guest')`,
+             VALUES($1, $2, $3, $4, $5, 'guest') RETURNING id`,
             [name, email, phone_number, birth_date, password]
         );
-        return { success: true, message: "Používateľ bol úspešne pridaný." };
+        
+        const userId = result.rows[0].id;
+
+        //create the birthday discount for this user
+        const discountResult = await createOrUpdateBirthdayDiscount(userId, birth_date);
+
+        if (discountResult.success) {
+            return { success: true, message: "User added successfully, and birthday discount has been created/updated." };
+        } else {
+            throw new Error(discountResult.error);
+        }
     } catch (error) {
-        console.error("Chyba pri pridávaní používateľa:", error);
-        return { success: false, error: "Nepodarilo sa pridať používateľa: " + error.message };
+        console.error("Error while adding user:", error);
+        return { success: false, error: "Failed to add user: " + error.message };
     }
 }
