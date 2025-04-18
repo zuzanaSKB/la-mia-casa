@@ -4,6 +4,7 @@ import { Tooltip } from "bootstrap";
 import { logout } from "../../services/authService";
 import { fetchAllReservations, updateReservationStatus } from "../../services/reservationService";
 import { fetchAllRooms, updateRoomPrice, updateRoomAvailability } from "../../services/roomService";
+import { fetchAllReviews } from "../../services/reviewService";
 
 function DashboardAdmin(props) {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function DashboardAdmin(props) {
   const [loadingId, setLoadingId] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [roomLoadingId, setRoomLoadingId] = useState(null);
-
+  const [reviews, setReviews] = useState([]);
 
   const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
@@ -36,12 +37,14 @@ function DashboardAdmin(props) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [reservations, roomList] = await Promise.all([
+        const [reservations, roomList, reviewList] = await Promise.all([
           fetchAllReservations(),
           fetchAllRooms(),
+          fetchAllReviews(),
         ]);
         setAllReservations(reservations);
         setRooms(roomList);
+        setReviews(reviewList);
       } catch (err) {
         props.setError(err.message);
       }
@@ -56,7 +59,6 @@ function DashboardAdmin(props) {
       new Tooltip(tooltipTriggerEl);
     });
   }, [rooms]); 
-  
 
   return (
     <div
@@ -274,7 +276,36 @@ function DashboardAdmin(props) {
 
           <section className="mb-5">
             <h4>Recenzie</h4>
-            <p>Prehľad spätnej väzby od hostí...</p>
+            {reviews.length === 0 ? (
+              <p>Žiadne recenzie.</p>
+            ) : (
+              <div className="table-responsive" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                <table className="table table-sm table-striped soft-table">
+                  <thead>
+                    <tr>
+                      <th>Dátum</th>
+                      <th>Používateľ</th>
+                      <th>Izba</th>
+                      <th>Hodnotenie</th>
+                      <th>Text</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reviews.map((review) => (
+                      <tr key={review.id}>
+                        <td>{new Date(review.date).toLocaleDateString()}</td>
+                        <td>{review.user_name || review.user_id}</td>
+                        <td>{review.room_name || "Neznáma izba"}</td>
+                        <td>
+                          {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
+                        </td>
+                        <td>{review.text}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
 
           <section className="mb-3">
