@@ -297,7 +297,7 @@ function DashboardGuest(props) {
                       ) : (
                         <>
                           <p>
-                            Hodnotenie: {"★".repeat(review.rating)} {review.text ? `– "${review.text}"` : ""}
+                            Hodnotenie: {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)} {review.text ? `– "${review.text}"` : ""}
                           </p>
                           <button
                             className="btn btn-outline-primary btn-sm me-2"
