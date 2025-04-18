@@ -65,3 +65,25 @@ export async function updateReview(reviewId, { text, rating }) {
   );
   return result.rows[0];
 }
+
+//admin
+
+export async function getAllReviews() {
+  const result = await pool.query(
+    `SELECT 
+        r.id,
+        r.text,
+        r.rating,
+        r.date,
+        r.deleted,
+        u.name AS user_name,
+        rm.name AS room_name,
+        r.reservation_id
+     FROM reviews r
+     JOIN users u ON r.user_id = u.id
+     JOIN rooms rm ON r.room_id = rm.id
+     WHERE r.deleted = FALSE
+     ORDER BY r.date DESC`
+  );
+  return result.rows;
+}

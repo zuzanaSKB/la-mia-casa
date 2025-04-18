@@ -1,5 +1,5 @@
 import express from 'express';
-import { addReview,  getReviewsByRoom,  getReviewsByUser, deleteReview, updateReview } from '../models/reviews.js';
+import { addReview,  getReviewsByRoom,  getReviewsByUser, deleteReview, updateReview, getAllReviews } from '../models/reviews.js';
 
 const router = express.Router();
 
@@ -68,6 +68,18 @@ router.delete('/:reviewId', async (req, res) => {
     } catch (error) {
       console.error("Chyba pri úprave recenzie:", error);
       res.status(500).json({ error: "Nepodarilo sa upraviť recenziu." });
+    }
+  });
+
+  //admin
+
+  router.get('/reviews', async (req, res) => {
+    try {
+      const reviews = await getAllReviews();
+      res.json(reviews);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ error: "Nepodarilo sa načítať všetky recenzie." });
     }
   });
 

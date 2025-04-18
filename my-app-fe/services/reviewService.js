@@ -86,3 +86,24 @@ export async function deleteReview(reviewId) {
     throw err;
   }
 }
+
+//admin
+
+//fetch all reviews
+export async function fetchAllReviews() {
+  try {
+    const response = await fetch(`${BASE_URL}/reviews`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Nepodarilo sa načítať všetky recenzie.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba pri načítavaní všetkých recenzií:", err);
+    throw err;
+  }
+}
