@@ -2,6 +2,7 @@ import express from 'express';
 import { getUser } from '../models/users.js';
 import { comparePassword } from '../utils/authHelpers.js';
 import { config } from '../config/config.js';
+import { createOrUpdateBirthdayDiscountIfToday } from '../models/birthdayDiscounts.js';
 
 const router = express.Router();
 
@@ -19,13 +20,18 @@ router.post("/login", async (req, res) => {
             if (isValid) {
                 req.session.userId = user.id;  //create session
                 console.log("Session created:", req.session);
+                
+                //create birthday discount if its user's birthday
+                await createOrUpdateBirthdayDiscountIfToday(user.id, user.birth_date);
 
                 return res.status(200).send({
                     message: 'Prihlásenie prebehlo úspešne.',
                     id: user.id,
                     role: user.role,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    phone_number: user.phone_number,
+                    birth_date: user.birth_date
                 });
             } else {
                 return res.status(401).send({ error: 'Neplatné prihlasovacie údaje.' });

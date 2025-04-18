@@ -11,6 +11,7 @@ import usersRoutes from './routes/users.js';
 import reservationRoutes from './routes/reservation.js'
 import roomRoutes from './routes/room.js'
 import reviewRoutes from './routes/review.js';
+import birthdayDiscountRoutes from './routes/birthdayDiscount.js'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -55,6 +56,7 @@ app.use('/users', usersRoutes);
 app.use('/reservation', reservationRoutes);
 app.use('/room', roomRoutes);
 app.use('/review', reviewRoutes);
+app.use('/birthdayDiscount', birthdayDiscountRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server is running.")
