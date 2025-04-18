@@ -1,20 +1,3 @@
-export async function fetchAvailableRooms(from, to) {
-  try {
-    const response = await fetch(`http://localhost:3000/reservation/available-rooms?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Nepodarilo sa načítať dostupné izby.");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error("Chyba pri načítavaní dostupných izieb:", err);
-    throw new Error(err.message || "Nastala neočakávaná chyba pri načítavaní izieb.");
-  }
-}
-
 export async function fetchAddReservation(userId, roomId, from, to) {
   try {
     const response = await fetch("http://localhost:3000/reservation/add", {

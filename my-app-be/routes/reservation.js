@@ -1,24 +1,8 @@
 import express from "express";
-import { getAvailableRooms, addReservation, getUserReservations, getUserPastReservations, cancelReservation, getAllReservations, updateReservationStatus } from "../models/reservations.js";
+import { addReservation, getUserReservations, getUserPastReservations, cancelReservation, getAllReservations, updateReservationStatus } from "../models/reservations.js";
 import { getUserById } from "../models/users.js";
 
 const router = express.Router();
-
-//get all available rooms
-router.get("/available-rooms", async (req, res) => {
-    const { from, to } = req.query;
-
-    if (!from || !to) {
-      return res.status(400).json({ error: "Chýba dátum 'od' alebo 'do'." });
-    }
-
-    try {
-        const rooms = await getAvailableRooms(from, to);
-        res.status(200).json(rooms);
-    } catch (err) {
-      res.status(500).json({ error: "Chyba pri načítavaní dostupných izieb." });
-    }
-});
 
 //add room reservation
 router.post("/add", async (req, res) => {

@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
 import usersRoutes from './routes/users.js';
 import reservationRoutes from './routes/reservation.js'
+import roomRoutes from './routes/room.js'
 import reviewRoutes from './routes/review.js';
 import dotenv from 'dotenv';
 
@@ -52,6 +53,7 @@ app.use(
 app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/reservation', reservationRoutes);
+app.use('/room', roomRoutes);
 app.use('/review', reviewRoutes);
 
 app.get("/", (req, res) => {
