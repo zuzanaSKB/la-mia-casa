@@ -84,7 +84,7 @@ function Home( {error, setError, setAuthStatus, setUserRole, setUserId, setUsern
         {showRegistration && <Registration />}
       </div>
 
-      {reviews.length > 0 && (
+      {!showLogin && !showRegistration && reviews.length > 0 && (
         <div
           style={{
             position: "absolute",
@@ -99,7 +99,7 @@ function Home( {error, setError, setAuthStatus, setUserRole, setUserId, setUsern
             boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
           }}
         >
-          <h5 className="text-center mb-3">Recenzie hostí</h5>
+          <h5 className="text-center mb-3">Recenzie našich hostí</h5>
           {reviews.map((review) => (
             <div key={review.id} style={{ marginBottom: "1rem" }}>
               <strong>{review.user_name || "Hosť"}</strong> –{" "}
@@ -107,6 +107,11 @@ function Home( {error, setError, setAuthStatus, setUserRole, setUserId, setUsern
               <div>
                 {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
               </div>
+              {review.room_name && (
+                <div style={{ fontStyle: "italic", fontSize: "0.85rem", color: "#555" }}>
+                  Izba: {review.room_name}
+                </div>
+              )}
               <p style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>{review.text}</p>
               <hr />
             </div>

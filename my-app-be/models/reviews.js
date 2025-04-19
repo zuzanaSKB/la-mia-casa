@@ -88,12 +88,13 @@ export async function getAllReviews() {
   return result.rows;
 }
 
-//returns reviews to publish
+//returns reviews to publish with room name
 export async function getAllPublishedReviews() {
   const result = await pool.query(
-    `SELECT r.*, u.name AS user_name 
+    `SELECT r.*, u.name AS user_name, ro.name AS room_name
      FROM reviews r
      JOIN users u ON r.user_id = u.id
+     JOIN rooms ro ON r.room_id = ro.id
      WHERE r.deleted = FALSE AND r.published = TRUE
      ORDER BY r.date DESC`
   );
