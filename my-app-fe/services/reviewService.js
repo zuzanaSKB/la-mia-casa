@@ -107,3 +107,43 @@ export async function fetchAllReviews() {
     throw err;
   }
 }
+
+//fetch all published reviews
+export async function fetchAllPublishedReviews() {
+  try {
+    const response = await fetch(`${BASE_URL}/published`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Nepodarilo sa načítať publikované recenzie.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba pri načítavaní publikovaných recenzií:", err);
+    throw err;
+  }
+}
+
+//publish review
+export async function setReviewPublished(reviewId, published) {
+  try {
+    const response = await fetch(`${BASE_URL}/publish/${reviewId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ published }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Nepodarilo sa zmeniť publikáciu recenzie.");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Chyba pri zmene publikácie:", err);
+    throw err;
+  }
+}
