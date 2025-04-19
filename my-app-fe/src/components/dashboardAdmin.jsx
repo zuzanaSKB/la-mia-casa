@@ -309,7 +309,7 @@ function DashboardAdmin(props) {
                                 const updated = await setReviewPublished(review.id, !review.published);
                                 setReviews((prev) =>
                                   prev.map((r) =>
-                                    r.id === review.id ? { ...r, published: updated.published } : r
+                                    r.id === review.id ? { ...r, published: !r.published } : r
                                   )
                                 );
                               } catch (err) {

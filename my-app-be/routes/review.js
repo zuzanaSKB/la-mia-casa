@@ -81,9 +81,7 @@ router.delete('/:reviewId', async (req, res) => {
       console.error(err.message);
       res.status(500).json({ error: "Nepodarilo sa načítať všetky recenzie." });
     }
-  });
-
-export default router;
+});
 
 //get all published reviews
 router.get('/published', async (req, res) => {
@@ -97,7 +95,7 @@ router.get('/published', async (req, res) => {
 });
 
 //publish review
-router.put('/publish/:reviewId', async (req, res) => {
+router.patch('/publish/:reviewId', async (req, res) => {
   const { reviewId } = req.params;
   const { published } = req.body;
 
@@ -109,3 +107,5 @@ router.put('/publish/:reviewId', async (req, res) => {
     res.status(500).json({ error: "Nepodarilo sa zmeniť stav publikácie recenzie." });
   }
 });
+
+export default router;

@@ -76,6 +76,7 @@ export async function getAllReviews() {
         r.rating,
         r.date,
         r.deleted,
+        r.published,
         u.name AS user_name,
         rm.name AS room_name,
         r.reservation_id

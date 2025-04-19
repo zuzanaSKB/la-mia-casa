@@ -131,7 +131,7 @@ export async function fetchAllPublishedReviews() {
 export async function setReviewPublished(reviewId, published) {
   try {
     const response = await fetch(`${BASE_URL}/publish/${reviewId}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ published }),
@@ -140,7 +140,7 @@ export async function setReviewPublished(reviewId, published) {
     if (!response.ok) {
       throw new Error("Nepodarilo sa zmeniť publikáciu recenzie.");
     }
-
+    console.log(response);
     return await response.json();
   } catch (err) {
     console.error("Chyba pri zmene publikácie:", err);
