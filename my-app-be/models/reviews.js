@@ -87,3 +87,24 @@ export async function getAllReviews() {
   );
   return result.rows;
 }
+
+//returns reviews to publish
+export async function getAllPublishedReviews() {
+  const result = await pool.query(
+    `SELECT r.*, u.name AS user_name 
+     FROM reviews r
+     JOIN users u ON r.user_id = u.id
+     WHERE r.deleted = FALSE AND r.published = TRUE
+     ORDER BY r.date DESC`
+  );
+  return result.rows;
+}
+
+//toggle published status
+export async function togglePublishReview(reviewId, published) {
+  const result = await pool.query(
+    `UPDATE reviews SET published = $1 WHERE id = $2 RETURNING *`,
+    [published, reviewId]
+  );
+  return result.rows[0];
+}

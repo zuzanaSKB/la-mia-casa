@@ -1,5 +1,5 @@
 import express from 'express';
-import { addReview,  getReviewsByRoom,  getReviewsByUser, deleteReview, updateReview, getAllReviews } from '../models/reviews.js';
+import { addReview,  getReviewsByRoom,  getReviewsByUser, deleteReview, updateReview, getAllReviews, getAllPublishedReviews, togglePublishReview } from '../models/reviews.js';
 
 const router = express.Router();
 
@@ -72,7 +72,7 @@ router.delete('/:reviewId', async (req, res) => {
   });
 
   //admin
-
+  //get all reviews
   router.get('/reviews', async (req, res) => {
     try {
       const reviews = await getAllReviews();
@@ -84,3 +84,28 @@ router.delete('/:reviewId', async (req, res) => {
   });
 
 export default router;
+
+//get all published reviews
+router.get('/published', async (req, res) => {
+  try {
+    const reviews = await getAllPublishedReviews();
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Chyba pri načítaní publikovaných recenzií:", error);
+    res.status(500).json({ error: "Nepodarilo sa načítať publikované recenzie." });
+  }
+});
+
+//publish review
+router.put('/publish/:reviewId', async (req, res) => {
+  const { reviewId } = req.params;
+  const { published } = req.body;
+
+  try {
+    const updated = await togglePublishReview(reviewId, published);
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error("Chyba pri zmene publikácie recenzie:", error);
+    res.status(500).json({ error: "Nepodarilo sa zmeniť stav publikácie recenzie." });
+  }
+});
