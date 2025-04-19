@@ -4,7 +4,7 @@ import { Tooltip } from "bootstrap";
 import { logout } from "../../services/authService";
 import { fetchAllReservations, updateReservationStatus } from "../../services/reservationService";
 import { fetchAllRooms, updateRoomPrice, updateRoomAvailability } from "../../services/roomService";
-import { fetchAllReviews } from "../../services/reviewService";
+import { fetchAllReviews, setReviewPublished } from "../../services/reviewService";
 
 function DashboardAdmin(props) {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ function DashboardAdmin(props) {
   const [rooms, setRooms] = useState([]);
   const [roomLoadingId, setRoomLoadingId] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [publishLoadingId, setPublishLoadingId] = useState(null);
 
   const formatDate = (dateStr) => new Date(dateStr).toISOString().slice(0, 10);
 
@@ -283,6 +284,7 @@ function DashboardAdmin(props) {
                       <th>Izba</th>
                       <th>Hodnotenie</th>
                       <th>Text</th>
+                      <th>Publikácia</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -295,6 +297,31 @@ function DashboardAdmin(props) {
                           {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
                         </td>
                         <td>{review.text}</td>
+                        <td>
+                          <button
+                            className={`btn btn-sm ${
+                              review.published ? "btn-danger" : "btn-primary"
+                            }`}
+                            disabled={publishLoadingId === review.id}
+                            onClick={async () => {
+                              try {
+                                setPublishLoadingId(review.id);
+                                const updated = await setReviewPublished(review.id, !review.published);
+                                setReviews((prev) =>
+                                  prev.map((r) =>
+                                    r.id === review.id ? { ...r, published: updated.published } : r
+                                  )
+                                );
+                              } catch (err) {
+                                props.setError(err.message);
+                              } finally {
+                                setPublishLoadingId(null);
+                              }
+                            }}
+                          >
+                            {review.published ? "Zrušiť publikáciu" : "Publikovať"}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
