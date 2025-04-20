@@ -196,7 +196,7 @@ function DashboardAdmin(props) {
                 <thead>
                   <tr>
                     <th>Názov</th>
-                    <th>Cena (€)</th>
+                    <th>Cena za noc (€)</th>
                     <th>Dostupná</th>
                     <th>Uložiť</th>
                   </tr>
