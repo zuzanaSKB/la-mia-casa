@@ -30,10 +30,7 @@ app.use(cors({
   credentials: true
 }));
 
-if (process.env.STATUS === 'production') {
-  // trust proxy needed for secure cookie to work on render.com
-  // because render.com uses a reverse proxy to handle HTTPS requests
-  // and forwards the requests to the backend server over HTTP
+if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
