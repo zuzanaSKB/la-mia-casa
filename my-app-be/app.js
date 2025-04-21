@@ -26,8 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
+  origin: process.env.CLIENT_ORIGIN?.split(','),
+  credentials: true
 }));
 
 app.use(
@@ -51,12 +51,12 @@ app.use(
 
 
 
-app.use('/auth', authRoutes);
-app.use('/users', usersRoutes);
-app.use('/reservation', reservationRoutes);
-app.use('/room', roomRoutes);
-app.use('/review', reviewRoutes);
-app.use('/birthdayDiscount', birthdayDiscountRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/reservation', reservationRoutes);
+app.use('/api/room', roomRoutes);
+app.use('/api/review', reviewRoutes);
+app.use('/api/birthdayDiscount', birthdayDiscountRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server is running.")

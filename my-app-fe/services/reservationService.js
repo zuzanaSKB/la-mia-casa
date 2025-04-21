@@ -1,6 +1,6 @@
 export async function fetchAddReservation(userId, roomId, from, to, finalRoomPrice) {
   try {
-    const response = await fetch("http://localhost:3000/reservation/add", {
+    const response = await fetch("/api/reservation/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, roomId, from, to, price: finalRoomPrice }),
@@ -21,7 +21,7 @@ export async function fetchAddReservation(userId, roomId, from, to, finalRoomPri
 
 export async function fetchUserReservations(userId) {
   try {
-    const response = await fetch(`http://localhost:3000/reservation/user/${userId}`);
+    const response = await fetch(`/api/reservation/user/${userId}`);
     
     if (!response.ok) {
       throw new Error("Chyba pri načítavaní rezervácií používateľa.");
@@ -36,7 +36,7 @@ export async function fetchUserReservations(userId) {
 
 export async function fetchPastReservations(userId) {
   try {
-    const response = await fetch(`http://localhost:3000/reservation/user/${userId}/past`);
+    const response = await fetch(`/api/reservation/user/${userId}/past`);
 
     if (!response.ok) {
       throw new Error("Chyba pri načítavaní minulých rezervácií.");
@@ -51,7 +51,7 @@ export async function fetchPastReservations(userId) {
 
 export async function cancelReservation(reservationId) {
   try {
-    const response = await fetch(`http://localhost:3000/reservation/cancel/${reservationId}`, {
+    const response = await fetch(`/api/reservation/cancel/${reservationId}`, {
       method: "PATCH",
     });
 
@@ -71,7 +71,7 @@ export async function cancelReservation(reservationId) {
 
 export async function fetchAllReservations() {
   try {
-    const response = await fetch("http://localhost:3000/reservation/all", {
+    const response = await fetch("/api/reservation/all", {
       credentials: "include",
     });
 
@@ -87,7 +87,7 @@ export async function fetchAllReservations() {
 
 export async function updateReservationStatus(reservationId, newStatus) {
   try {
-    const response = await fetch(`http://localhost:3000/reservation/status/${reservationId}`, {
+    const response = await fetch(`/api/reservation/status/${reservationId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),

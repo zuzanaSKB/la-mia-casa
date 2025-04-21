@@ -1,10 +1,8 @@
-const BASE_URL = "http://localhost:3000/review";
-
 //create / update review
 export async function submitReview(userId, roomId, text, rating, reservationId, reviewId = null) {
   try {
     const method = reviewId ? "PUT" : "POST";
-    const url = reviewId ? `${BASE_URL}/${reviewId}` : `${BASE_URL}/`;
+    const url = reviewId ? `/api/review/${reviewId}` : `/api/review/`;
 
     console.log("Review payload:", {
       userId,
@@ -43,7 +41,7 @@ export async function submitReview(userId, roomId, text, rating, reservationId, 
 //fetch reviews by user
 export async function fetchReviewsByUser(userId) {
   try {
-    const response = await fetch(`${BASE_URL}/user/${userId}`);
+    const response = await fetch(`/api/review/user/${userId}`);
     if (!response.ok) {
       throw new Error("Nepodarilo sa načítať recenzie používateľa.");
     }
@@ -57,7 +55,7 @@ export async function fetchReviewsByUser(userId) {
 //fetch reviews by room
 export async function fetchReviewsByRoom(roomId) {
   try {
-    const response = await fetch(`${BASE_URL}/room/${roomId}`);
+    const response = await fetch(`/api/review/room/${roomId}`);
     if (!response.ok) {
       throw new Error("Nepodarilo sa načítať recenzie pre izbu.");
     }
@@ -71,7 +69,7 @@ export async function fetchReviewsByRoom(roomId) {
 //delete review by ID
 export async function deleteReview(reviewId) {
   try {
-    const response = await fetch(`${BASE_URL}/${reviewId}`, {
+    const response = await fetch(`/api/review/${reviewId}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -92,7 +90,7 @@ export async function deleteReview(reviewId) {
 //fetch all reviews
 export async function fetchAllReviews() {
   try {
-    const response = await fetch(`${BASE_URL}/reviews`, {
+    const response = await fetch(`/api/review/reviews`, {
       method: "GET",
       credentials: "include",
     });
@@ -111,7 +109,7 @@ export async function fetchAllReviews() {
 //fetch all published reviews
 export async function fetchAllPublishedReviews() {
   try {
-    const response = await fetch(`${BASE_URL}/published`, {
+    const response = await fetch(`/api/review/published`, {
       method: "GET",
       credentials: "include",
     });
@@ -130,7 +128,7 @@ export async function fetchAllPublishedReviews() {
 //publish review
 export async function setReviewPublished(reviewId, published) {
   try {
-    const response = await fetch(`${BASE_URL}/publish/${reviewId}`, {
+    const response = await fetch(`/api/review/publish/${reviewId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

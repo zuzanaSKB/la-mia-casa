@@ -1,6 +1,6 @@
 export async function fetchAvailableRooms(from, to) {
     try {
-      const response = await fetch(`http://localhost:3000/room/available-rooms?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+      const response = await fetch(`/api/room/available-rooms?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -18,13 +18,13 @@ export async function fetchAvailableRooms(from, to) {
 //admin
 
 export const fetchAllRooms = async () => {
-    const res = await fetch("http://localhost:3000/room");
+    const res = await fetch("/api/room");
     if (!res.ok) throw new Error("Nepodarilo sa načítať izby.");
     return res.json();
 };
   
 export const updateRoomPrice = async (roomId, price) => {
-    const res = await fetch(`http://localhost:3000/room/${roomId}/price`, {
+    const res = await fetch(`/api/room/${roomId}/price`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ price_per_night: parseFloat(price) }),
@@ -34,7 +34,7 @@ export const updateRoomPrice = async (roomId, price) => {
 };
   
 export const updateRoomAvailability = async (roomId, available) => {
-    const res = await fetch(`http://localhost:3000/room/${roomId}/availability`, {
+    const res = await fetch(`/api/room/${roomId}/availability`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ is_available: available }),
