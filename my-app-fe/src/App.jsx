@@ -55,10 +55,6 @@ function App() {
               <Home
                 error={error}
                 setError={setError}
-                setAuthStatus={setAuthStatus}
-                setUserRole={setUserRole}
-                setUserId={setUserId}
-                setUsername={setUsername}
               />
             }
           />
@@ -87,7 +83,7 @@ function App() {
                   setUserRole={setUserRole}
                   userId={userId}
                   username={username}
-                  hasBirthdayDiscount={birthdayDiscount} // Pass the discount here
+                  hasBirthdayDiscount={birthdayDiscount}
                 />
               </ProtectedRoute>
             }
