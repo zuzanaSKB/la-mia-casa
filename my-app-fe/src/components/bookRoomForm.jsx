@@ -109,6 +109,12 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole, has
         </button>
       </div>
 
+      <div style={{ position: "fixed", top: "20px", left: "20px", zIndex: 999 }}>
+        <button className="btn btn-outline-light btn-sm" onClick={() => navigate('/dashboardGuest')}>
+          ← Späť na úvod
+        </button>
+      </div>
+
       <div
         className="booking-box p-4"
         style={{
