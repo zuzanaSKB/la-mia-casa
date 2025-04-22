@@ -51,6 +51,11 @@ function Registration() {
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "90vh" }}>
+      <div style={{ position: "absolute", top: "20px", left: "20px" }}>
+        <button className="btn btn-outline-light btn-sm" onClick={() => navigate('/')}>
+          ← Späť na úvod
+        </button>
+      </div>
       <div className="registration-box p-4" style={{
         backgroundColor: "rgba(255, 255, 255, 0.2)",
         borderRadius: "15px",
