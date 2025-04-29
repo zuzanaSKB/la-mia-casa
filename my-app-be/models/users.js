@@ -15,19 +15,16 @@ export const getUserRole = (email) => {
     );
 };
 
-export async function getUserById(id) {
+export const getUserById = async (id) => {
     const result = await pool.query(
-      `
-      SELECT id, name, email, phone_number, birth_date, role
-      FROM users
-      WHERE id = $1`,
+      "SELECT id, name, email, phone_number, birth_date FROM users WHERE id = $1",
       [id]
     );
   
     return result.rows[0];
-  }  
+};    
 
-  export async function addUser(name, email, phone_number, birth_date, password) {
+export async function addUser(name, email, phone_number, birth_date, password) {
     try {
         // insert user into DB and get the user ID
         const result = await pool.query(
@@ -50,4 +47,29 @@ export async function getUserById(id) {
         console.error("Error while adding user:", error);
         return { success: false, error: "Failed to add user: " + error.message };
     }
-}
+};
+
+export async function updateUserName(userId, name) {
+  const result = await pool.query(
+      `UPDATE users SET name = $1 WHERE id = $2 RETURNING id, name, email, phone_number, birth_date, role`,
+      [name, userId]
+  );
+  return result.rows[0];
+};
+
+export async function updateUserPhone(userId, phoneNumber) {
+  const result = await pool.query(
+      `UPDATE users SET phone_number = $1 WHERE id = $2 RETURNING id, name, email, phone_number, birth_date, role`,
+      [phoneNumber, userId]
+  );
+  return result.rows[0];
+};
+
+export async function updateUserPassword(userId, newPassword) {
+  const hashedPassword = await hashPassword(newPassword);
+  const result = await pool.query(
+      `UPDATE users SET password = $1 WHERE id = $2 RETURNING id`,
+      [hashedPassword, userId]
+  );
+  return result.rows[0];
+};
