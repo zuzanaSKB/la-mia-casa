@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../services/authService";
 import { fetchUserReservations, fetchPastReservations, cancelReservation } from "../../services/reservationService";
 import { submitReview, fetchReviewsByUser, deleteReview } from "../../services/reviewService";
@@ -25,6 +25,8 @@ const StarRating = ({ rating, setRating }) => {
 };
 
 function DashboardGuest(props) {
+  const location = useLocation();
+  const [username, setUsername] = useState(props.username);
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [pastReservations, setPastReservations] = useState([]);
@@ -116,6 +118,11 @@ function DashboardGuest(props) {
   };
 
   useEffect(() => {
+    if (location.state?.updatedName) {
+      console.log("Updated Name:", location.state.updatedName);
+      setUsername(location.state.updatedName);
+    }
+
     const loadReservations = async () => {
       try {
         const future = await fetchUserReservations(props.userId);
@@ -136,7 +143,7 @@ function DashboardGuest(props) {
     if (props.userId) {
       loadReservations();
     }
-  }, [props.userId]);
+  }, [props.userId, location.state?.updatedName]);
 
   return (
     <div
@@ -179,6 +186,15 @@ function DashboardGuest(props) {
           <h1 className="mb-4 text-center">
             Vitajte späť, {props.username ? props.username : "používateľ"}!
           </h1>
+
+          <div className="text-center mb-4">
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => navigate("/updateProfile")}
+            >
+              Môj profil
+            </button>
+          </div>
 
           <div className="mb-5">
             <h4>Moje rezervácie</h4>

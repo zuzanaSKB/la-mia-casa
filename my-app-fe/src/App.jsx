@@ -10,6 +10,7 @@ import BookRoomForm from "./components/bookRoomForm";
 import ProtectedRoute from "./components/protectedRoute";
 import { useState, useEffect } from 'react';
 import { getBirthdayDiscount } from "../services/birthdayDiscountService";
+import UpdateProfile from "./components/updateProfile";
 
 function App() {
   const [error, setError] = useState('');
@@ -114,6 +115,19 @@ function App() {
                   setUserRole={setUserRole}
                   hasBirthdayDiscount={birthdayDiscount}
                   setHasBirthdayDiscount={setHasBirthdayDiscount}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/updateProfile"
+            element={
+              <ProtectedRoute authStatus={authStatus} allowedRole="guest" userRole={userRole}>
+                <UpdateProfile
+                  userId={userId}
+                  error={error}
+                  setError={setError}setAuthStatus={setAuthStatus}
+                  setUserRole={setUserRole}
                 />
               </ProtectedRoute>
             }
