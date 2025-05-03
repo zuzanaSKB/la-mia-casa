@@ -81,10 +81,19 @@ router.post("/add", async (req, res) => {
 
   router.get("/all", async (req, res) => {
     try {
-      const user = await getUserById(req.session.userId);
-      if (!user || user.role !== "admin") {
+      // const user = await getUserById(req.session.userId);
+      console.log("Session data:", req.session);
+      console.log("Session userId:", req.session.userId);
+      //console.log("User role from session:", user.role);
+
+      // if (!user || user.role !== "admin") {
+      //   return res.status(403).json({ error: "Prístup zamietnutý." });
+      // }
+
+      if (req.session.role !== "admin") {
         return res.status(403).json({ error: "Prístup zamietnutý." });
       }
+      
 
       const reservations = await getAllReservations();
       if (reservations.length === 0) {

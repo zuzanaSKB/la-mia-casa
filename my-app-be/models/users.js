@@ -17,7 +17,7 @@ export const getUserRole = (email) => {
 
 export const getUserById = async (id) => {
     const result = await pool.query(
-      "SELECT id, name, email, phone_number, birth_date FROM users WHERE id = $1",
+      "SELECT id, name, email, phone_number, birth_date, role FROM users WHERE id = $1",
       [id]
     );
   

@@ -9,6 +9,10 @@ const router = express.Router();
 // Login route
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+        return res.status(400).send({ error: 'Email and password are required.' });
+    }
 
     try {
         const result = await getUser(email); //get user from DB
@@ -19,6 +23,7 @@ router.post("/login", async (req, res) => {
 
             if (isValid) {
                 req.session.userId = user.id;  //create session
+                req.session.role = user.role;
                 console.log("Session created:", req.session);
                 
                 //create birthday discount if its user's birthday
