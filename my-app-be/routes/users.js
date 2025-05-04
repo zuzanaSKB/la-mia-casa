@@ -81,8 +81,9 @@ router.patch("/:id/password", async (req, res) => {
   if (!password) return res.status(400).json({ error: "Heslo je povinné." });
 
   try {
-    await updateUserPassword(id, password);
-    res.json({ message: "Heslo bolo aktualizované." });
+    const hashedPassword = await hashPassword(password);
+    const updatedUser = await updateUserPassword(id, hashedPassword);
+    res.json({ message: "Heslo bolo aktualizované.", user: updatedUser });
   } catch (err) {
     console.error("Chyba pri aktualizácii hesla:", err);
     res.status(500).json({ error: "Nepodarilo sa aktualizovať heslo." });

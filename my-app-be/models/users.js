@@ -65,10 +65,9 @@ export async function updateUserPhone(userId, phoneNumber) {
   return result.rows[0];
 };
 
-export async function updateUserPassword(userId, newPassword) {
-  const hashedPassword = await hashPassword(newPassword);
+export async function updateUserPassword(userId, hashedPassword) {
   const result = await pool.query(
-      `UPDATE users SET password = $1 WHERE id = $2 RETURNING id`,
+      `UPDATE users SET password = $1 WHERE id = $2 RETURNING id, name, email, phone_number, birth_date, role`,
       [hashedPassword, userId]
   );
   return result.rows[0];
