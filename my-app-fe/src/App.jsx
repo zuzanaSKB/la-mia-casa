@@ -84,6 +84,7 @@ function App() {
                   setUserRole={setUserRole}
                   userId={userId}
                   username={username}
+                  setUsername={setUsername}
                   hasBirthdayDiscount={birthdayDiscount}
                 />
               </ProtectedRoute>
@@ -125,6 +126,8 @@ function App() {
               <ProtectedRoute authStatus={authStatus} allowedRole="guest" userRole={userRole}>
                 <UpdateProfile
                   userId={userId}
+                  username={username}
+                  setUsername={setUsername}
                   error={error}
                   setError={setError}
                   setAuthStatus={setAuthStatus}

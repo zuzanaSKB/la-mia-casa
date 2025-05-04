@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { logout } from "../../services/authService";
 import { fetchUserReservations, fetchPastReservations, cancelReservation } from "../../services/reservationService";
 import { submitReview, fetchReviewsByUser, deleteReview } from "../../services/reviewService";
@@ -25,8 +25,6 @@ const StarRating = ({ rating, setRating }) => {
 };
 
 function DashboardGuest(props) {
-  const location = useLocation();
-  const [username, setUsername] = useState(props.username);
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [pastReservations, setPastReservations] = useState([]);
@@ -118,12 +116,7 @@ function DashboardGuest(props) {
   };
 
   useEffect(() => {
-    if (location.state?.updatedName) {
-      console.log("Updated Name:", location.state.updatedName);
-      setUsername(location.state.updatedName);
-    }
-
-    const loadReservations = async () => {
+     const loadReservations = async () => {
       try {
         const future = await fetchUserReservations(props.userId);
         const past = await fetchPastReservations(props.userId);
@@ -143,7 +136,7 @@ function DashboardGuest(props) {
     if (props.userId) {
       loadReservations();
     }
-  }, [props.userId, location.state?.updatedName]);
+  }, [props.userId]);
 
   return (
     <div

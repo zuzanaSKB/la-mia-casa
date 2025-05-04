@@ -4,7 +4,7 @@ import { fetchUserById, updateUserName, updateUserPhone, updateUserPassword } fr
 import { logout } from "../../services/authService";
 import { Pencil } from "react-bootstrap-icons";
 
-function UpdateProfile({ userId, error, setError, setAuthStatus, setUserRole }) {
+function UpdateProfile({ userId, username, setUsername, error, setError, setAuthStatus, setUserRole }) {
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -68,13 +68,14 @@ function UpdateProfile({ userId, error, setError, setAuthStatus, setUserRole }) 
 
       if (profile.name !== currentData.name) {
         await updateUserName(userId, profile.name);
+        setUsername(profile.name);
       }
 
       if (profile.phone_number !== (currentData.phone_number || "")) {
         await updateUserPhone(userId, profile.phone_number);
       }
 
-      navigate("/dashboardGuest", { state: { updatedName: profile.name } });
+      navigate("/dashboardGuest");
       console.log("Updated name:", profile.name);
     } catch (err) {
       console.error("Chyba pri ukladaní profilu:", err);
