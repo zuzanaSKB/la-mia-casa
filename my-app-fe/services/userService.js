@@ -57,13 +57,25 @@ export const updateUserPhone = async (userId, phone_number) => {
 };
 
 export const updateUserPassword = async (userId, password) => {
-  const response = await fetch(`/api/users/${userId}/password`, {
-    method: "PATCH",
-    body: JSON.stringify({ password }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`/api/users/${userId}/password`, {
+      method: "PATCH",
+      body: JSON.stringify({ password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error Response:", data);
+      throw new Error(data.error || `Nepodarilo sa zmeniť heslo (status: ${response.status})`);
+    }
+  
+    return data;
+  } catch (error) {
+    console.error("Request Failed:", error);
+    throw new Error(error.message || "Chyba siete.");
+  }
 };

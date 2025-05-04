@@ -126,7 +126,8 @@ function App() {
                 <UpdateProfile
                   userId={userId}
                   error={error}
-                  setError={setError}setAuthStatus={setAuthStatus}
+                  setError={setError}
+                  setAuthStatus={setAuthStatus}
                   setUserRole={setUserRole}
                 />
               </ProtectedRoute>
