@@ -1,5 +1,5 @@
 import express from "express";
-import { addUser, getUser, updateUserName, updateUserPhone, updateUserPassword } from "../models/users.js";
+import { addUser, getUser, getUserById, updateUserName, updateUserPhone, updateUserPassword } from "../models/users.js";
 import { hashPassword } from '../utils/authHelpers.js';
 
 const router = express.Router();
@@ -36,6 +36,7 @@ router.get("/me", async (req, res) => {
 
   try {
     const user = await getUserById(req.session.userId);
+    console.log(user)
 
     if (!user) {
       return res.status(404).json({ error: "Používateľ nenájdený." });
