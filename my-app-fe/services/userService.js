@@ -20,21 +20,24 @@ export const register = async (name, email, phone_number, birth_date, password) 
   }
 };
 
-export const fetchUserById = async (userId) => {
-  const response = await fetch(`/api/users/${userId}`);
+export const fetchCurrentUser  = async () => {
+  const response = await fetch(`/api/users/me`, {
+    credentials: "include",
+  });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || `Nepodarilo sa načítať používateľa (status: ${response.status})`);
+    throw new Error(errorText || `Nepodarilo sa načítať používateľa`);
   }
 
   const data = await response.json();
   return data.user;
 };
 
-export const updateUserName = async (userId, name) => {
-  const response = await fetch(`/api/users/${userId}/name`, {
+export const updateUserName = async (name) => {
+  const response = await fetch(`/api/users/me/name`, {
     method: "PATCH",
+    credentials: "include",
     body: JSON.stringify({ name }),
     headers: {
       "Content-Type": "application/json",
@@ -44,9 +47,10 @@ export const updateUserName = async (userId, name) => {
   return data.user;
 };
 
-export const updateUserPhone = async (userId, phone_number) => {
-  const response = await fetch(`/api/users/${userId}/phone`, {
+export const updateUserPhone = async (phone_number) => {
+  const response = await fetch(`/api/users/me/phone`, {
     method: "PATCH",
+    credentials: "include",
     body: JSON.stringify({ phone_number }),
     headers: {
       "Content-Type": "application/json",
@@ -56,10 +60,11 @@ export const updateUserPhone = async (userId, phone_number) => {
   return data.user;
 };
 
-export const updateUserPassword = async (userId, password) => {
+export const updateUserPassword = async (password) => {
   try {
-    const response = await fetch(`/api/users/${userId}/password`, {
+    const response = await fetch(`/api/users/me/password`, {
       method: "PATCH",
+      credentials: "include",
       body: JSON.stringify({ password }),
       headers: {
         "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserById, updateUserName, updateUserPhone, updateUserPassword } from "../../services/userService";
+import { fetchCurrentUser, updateUserName, updateUserPhone, updateUserPassword } from "../../services/userService";
 import { logout } from "../../services/authService";
 import { Pencil } from "react-bootstrap-icons";
 
@@ -35,7 +35,7 @@ function UpdateProfile({ userId, username, setUsername, error, setError, setAuth
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const data = await fetchUserById(userId);
+        const data = await fetchCurrentUser();
         setProfile({
           name: data.name,
           email: data.email,
@@ -64,15 +64,15 @@ function UpdateProfile({ userId, username, setUsername, error, setError, setAuth
     try {
       setError("");
 
-      const currentData = await fetchUserById(userId);
+      const currentData = await fetchCurrentUser();
 
       if (profile.name !== currentData.name) {
-        await updateUserName(userId, profile.name);
+        await updateUserName(profile.name);
         setUsername(profile.name);
       }
 
       if (profile.phone_number !== (currentData.phone_number || "")) {
-        await updateUserPhone(userId, profile.phone_number);
+        await updateUserPhone(profile.phone_number);
       }
 
       navigate("/dashboardGuest");
@@ -93,7 +93,7 @@ function UpdateProfile({ userId, username, setUsername, error, setError, setAuth
     }
 
     try {
-      await updateUserPassword(userId, newPassword);
+      await updateUserPassword(newPassword);
       setError("");
       setNewPassword("");
       setConfirmPassword("");

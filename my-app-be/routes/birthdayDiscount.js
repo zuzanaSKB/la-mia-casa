@@ -5,12 +5,15 @@ const router = express.Router();
 
 //create or update birthday discount for a user
 router.post('/createOrUpdateBirthdayDiscount', async (req, res) => {
-    const { userId, date } = req.body;
-    if (!userId || !date) {
-        return res.status(400).json({ error: 'UserId and date are required.' });
+    const { date } = req.body;
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Neautorizovaný prístup.' });
+      }
+    if (!date) {
+        return res.status(400).json({ error: 'Dátum je povinný.' });
     }
 
-    const result = await createOrUpdateBirthdayDiscount(userId, date);
+    const result = await createOrUpdateBirthdayDiscount(req.session.userId, date);
     if (result.success) {
         return res.json({ message: result.message });
     } else {
@@ -20,12 +23,11 @@ router.post('/createOrUpdateBirthdayDiscount', async (req, res) => {
 
 //get birthday discount for a user
 router.get('/getBirthdayDiscount', async (req, res) => {
-    const { userId } = req.query;
-    if (!userId) {
-        return res.status(400).json({ error: 'UserId is required.' });
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Neautorizovaný prístup.' });
     }
 
-    const result = await getBirthdayDiscount(userId);
+    const result = await getBirthdayDiscount(req.session.userId);
     if (result.success) {
         return res.json({ discount: result.discount });
     } else {
@@ -35,12 +37,15 @@ router.get('/getBirthdayDiscount', async (req, res) => {
 
 //apply birthday discount to a reservation
 router.post('/applyBirthdayDiscount', async (req, res) => {
-    const { userId, roomPrice } = req.body;
-    if (!userId || !roomPrice) {
-        return res.status(400).json({ error: 'UserId and RoomPrice are required.' });
+    const { roomPrice } = req.body;
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Neautorizovaný prístup.' });
+      }
+    if (!roomPrice) {
+        return res.status(400).json({ error: 'Cena izby je povinná.' });
     }
 
-    const result = await applyBirthdayDiscount(userId, roomPrice);
+    const result = await applyBirthdayDiscount(req.session.userId, roomPrice);
     if (result.success) {
         return res.json({
             discountedPrice: result.discountedPrice,
@@ -52,13 +57,11 @@ router.post('/applyBirthdayDiscount', async (req, res) => {
 });
 
 router.post('/expireBirthdayDiscount', async (req, res) => {
-    const { userId } = req.body;
-  
-    if (!userId) {
-      return res.status(400).json({ error: 'UserId is required.' });
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Neautorizovaný prístup.' });
     }
   
-    const result = await expireBirthdayDiscount(userId);
+    const result = await expireBirthdayDiscount(req.session.userId);
   
     if (result.success) {
       return res.json({ message: result.message });

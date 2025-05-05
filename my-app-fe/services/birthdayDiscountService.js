@@ -1,10 +1,10 @@
 //create / update birthday discount for a user
-export const createOrUpdateBirthdayDiscount = async (userId, date) => {
+export const createOrUpdateBirthdayDiscount = async (date) => {
     try {
       const response = await fetch("/api/birthdayDiscount/createOrUpdateBirthdayDiscount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, date }),
+        body: JSON.stringify({ date }),
       });
   
       const data = await response.json();
@@ -14,7 +14,7 @@ export const createOrUpdateBirthdayDiscount = async (userId, date) => {
         throw new Error(data.error || "Chyba pri vytváraní/updating birthday discount.");
       }
   
-      return data; // success response with message
+      return data;
     } catch (error) {
       console.error("Request Failed:", error);
       throw new Error(error.message || "Chyba siete.");
@@ -22,12 +22,15 @@ export const createOrUpdateBirthdayDiscount = async (userId, date) => {
 };
   
 //get birthday discount for a user
-export const getBirthdayDiscount = async (userId) => {
+export const getBirthdayDiscount = async () => {
     try {
-      const response = await fetch(`/api/birthdayDiscount/getBirthdayDiscount?userId=${userId}`, {
+      const response = await fetch(`/api/birthdayDiscount/getBirthdayDiscount`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
+
+      const data = await response.json();
   
       if (!response.ok) {
         console.error("Error Response:", response);
@@ -36,8 +39,6 @@ export const getBirthdayDiscount = async (userId) => {
         }
         throw new Error("Chyba pri získavaní narodeninovej zľavy.");
       }
-  
-      const data = await response.json();
       
       if (!data || Object.keys(data).length === 0) {
         return null;
@@ -51,12 +52,13 @@ export const getBirthdayDiscount = async (userId) => {
   };  
   
 //apply birthday discount to a reservation
-export const applyBirthdayDiscount = async (userId, roomPrice) => {
+export const applyBirthdayDiscount = async (roomPrice) => {
     try {
       const response = await fetch("/api/birthdayDiscount/applyBirthdayDiscount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, roomPrice }),
+        credentials: "include",
+        body: JSON.stringify({ roomPrice }),
       });
   
       const data = await response.json();
@@ -73,12 +75,12 @@ export const applyBirthdayDiscount = async (userId, roomPrice) => {
     }
 };
 
-export const expireBirthdayDiscount = async (userId) => {
+export const expireBirthdayDiscount = async () => {
     try {
     const response = await fetch("/api/birthdayDiscount/expireBirthdayDiscount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        credentials: "include",
     });
 
     const data = await response.json();

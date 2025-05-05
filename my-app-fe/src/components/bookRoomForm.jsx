@@ -12,7 +12,7 @@ function getNextDate(dateStr) {
   return date.toISOString().split("T")[0];
 }
 
-function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole, hasBirthdayDiscount, setHasBirthdayDiscount}) {
+function BookRoomForm({ error, setError, setAuthStatus, setUserRole, hasBirthdayDiscount, setHasBirthdayDiscount}) {
   const navigate = useNavigate();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -68,11 +68,11 @@ function BookRoomForm({ userId, error, setError, setAuthStatus, setUserRole, has
     }
 
     try {
-      await fetchAddReservation(userId, selectedRoom, fromDate, toDate, finalPrice);
+      await fetchAddReservation(selectedRoom, fromDate, toDate, finalPrice);
 
       if (applyDiscount && hasBirthdayDiscount) {
         try {
-          await expireBirthdayDiscount(userId);
+          await expireBirthdayDiscount();
           setHasBirthdayDiscount(null);
           console.log("Birthday discount expired after booking.");
         } catch (expireError) {

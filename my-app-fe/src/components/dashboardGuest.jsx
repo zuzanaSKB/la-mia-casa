@@ -64,7 +64,6 @@ function DashboardGuest(props) {
   
     try {
       await submitReview(
-        props.userId,
         reservation.room_id,
         reviewText,
         reviewRating,
@@ -72,7 +71,7 @@ function DashboardGuest(props) {
         existingReview?.id
       );
   
-      const updatedReviews = await fetchReviewsByUser(props.userId);
+      const updatedReviews = await fetchReviewsByUser();
       setUserReviews(updatedReviews);
       setActiveReviewId(null);
       setReviewRating(0);
@@ -93,7 +92,7 @@ function DashboardGuest(props) {
     try {
       const response = await cancelReservation(reservationId);
       if (response.success) {
-        const updatedReservations = await fetchUserReservations(props.userId);
+        const updatedReservations = await fetchUserReservations();
         setReservations(updatedReservations);
       } else {
         props.setError(response.message);
@@ -107,7 +106,7 @@ function DashboardGuest(props) {
   const handleDeleteReview = async (reviewId) => {
     try {
       await deleteReview(reviewId);
-      const updatedReviews = await fetchReviewsByUser(props.userId);
+      const updatedReviews = await fetchReviewsByUser();
       setUserReviews(updatedReviews);
     } catch (error) {
       console.error("Chyba pri mazaní recenzie:", error);
@@ -118,9 +117,9 @@ function DashboardGuest(props) {
   useEffect(() => {
      const loadReservations = async () => {
       try {
-        const future = await fetchUserReservations(props.userId);
-        const past = await fetchPastReservations(props.userId);
-        const reviews = await fetchReviewsByUser(props.userId);
+        const future = await fetchUserReservations();
+        const past = await fetchPastReservations();
+        const reviews = await fetchReviewsByUser();
 
         setReservations(future);
         setPastReservations(past);

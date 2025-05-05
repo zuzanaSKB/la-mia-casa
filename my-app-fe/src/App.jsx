@@ -24,7 +24,7 @@ function App() {
     const fetchDiscount = async () => {
       if (userId && userRole !== 'admin') {
         try {
-          const response = await getBirthdayDiscount(userId);
+          const response = await getBirthdayDiscount();
           console.log("discount response: ", response);
   
           if (response && response.discount) {
@@ -36,7 +36,7 @@ function App() {
   
         } catch (error) {
           console.error("Unexpected error fetching birthday discount:", error);
-          setError("Chyba pri načítavaní zľavy.");
+          //setError("Chyba pri načítavaní zľavy.");
         }
       } else {
         setHasBirthdayDiscount(null);

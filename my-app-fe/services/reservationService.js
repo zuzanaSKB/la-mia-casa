@@ -1,9 +1,9 @@
-export async function fetchAddReservation(userId, roomId, from, to, finalRoomPrice) {
+export async function fetchAddReservation(roomId, from, to, finalRoomPrice) {
   try {
     const response = await fetch("/api/reservation/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, roomId, from, to, price: finalRoomPrice }),
+      body: JSON.stringify({ roomId, from, to, price: finalRoomPrice }),
       credentials: "include",
     });
 
@@ -19,9 +19,11 @@ export async function fetchAddReservation(userId, roomId, from, to, finalRoomPri
   }
 }
 
-export async function fetchUserReservations(userId) {
+export async function fetchUserReservations() {
   try {
-    const response = await fetch(`/api/reservation/user/${userId}`);
+    const response = await fetch(`/api/reservation/user/reservations`, {
+      credentials: "include",
+    });
     
     if (!response.ok) {
       throw new Error("Chyba pri načítavaní rezervácií používateľa.");
@@ -34,9 +36,11 @@ export async function fetchUserReservations(userId) {
   }
 }
 
-export async function fetchPastReservations(userId) {
+export async function fetchPastReservations() {
   try {
-    const response = await fetch(`/api/reservation/user/${userId}/past`);
+    const response = await fetch(`/api/reservation/user/past`, {
+      credentials: "include",
+    });
 
     if (!response.ok) {
       throw new Error("Chyba pri načítavaní minulých rezervácií.");

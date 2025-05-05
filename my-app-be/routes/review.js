@@ -4,7 +4,8 @@ import { addReview,  getReviewsByRoom,  getReviewsByUser, deleteReview, updateRe
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { userId, roomId, text, rating, reservationId } = req.body;
+  const { roomId, text, rating, reservationId } = req.body;
+  const userId = req.session.userId;
 
   if (!userId || !roomId || rating === undefined || rating === null) {
     return res.status(400).json({ error: "Chýbajú požadované údaje." });
@@ -31,8 +32,12 @@ router.get('/room/:roomId', async (req, res) => {
   }
 });
 
-router.get('/user/:userId', async (req, res) => {
-  const { userId } = req.params;
+router.get('/user', async (req, res) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Používateľ nie je prihlásený." });
+  }
 
   try {
     const reviews = await getReviewsByUser(userId);

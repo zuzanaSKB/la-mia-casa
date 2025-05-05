@@ -1,11 +1,10 @@
 //create / update review
-export async function submitReview(userId, roomId, text, rating, reservationId, reviewId = null) {
+export async function submitReview(roomId, text, rating, reservationId, reviewId = null) {
   try {
     const method = reviewId ? "PUT" : "POST";
     const url = reviewId ? `/api/review/${reviewId}` : `/api/review/`;
 
     console.log("Review payload:", {
-      userId,
       roomId,
       text,
       rating,
@@ -17,7 +16,6 @@ export async function submitReview(userId, roomId, text, rating, reservationId, 
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
-        userId,
         roomId,
         text,
         rating,
@@ -39,9 +37,9 @@ export async function submitReview(userId, roomId, text, rating, reservationId, 
 }
 
 //fetch reviews by user
-export async function fetchReviewsByUser(userId) {
+export async function fetchReviewsByUser() {
   try {
-    const response = await fetch(`/api/review/user/${userId}`);
+    const response = await fetch(`/api/review/user`);
     if (!response.ok) {
       throw new Error("Nepodarilo sa načítať recenzie používateľa.");
     }
