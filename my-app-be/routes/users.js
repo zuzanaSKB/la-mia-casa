@@ -36,7 +36,6 @@ router.get("/me", async (req, res) => {
 
   try {
     const user = await getUserById(req.session.userId);
-    console.log(user)
 
     if (!user) {
       return res.status(404).json({ error: "Používateľ nenájdený." });

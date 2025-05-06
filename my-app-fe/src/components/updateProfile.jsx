@@ -76,7 +76,6 @@ function UpdateProfile({ userId, username, setUsername, error, setError, setAuth
       }
 
       navigate("/dashboardGuest");
-      console.log("Updated name:", profile.name);
     } catch (err) {
       console.error("Chyba pri ukladaní profilu:", err);
       const message =

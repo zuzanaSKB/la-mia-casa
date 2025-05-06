@@ -3,13 +3,6 @@ export async function submitReview(roomId, text, rating, reservationId, reviewId
   try {
     const method = reviewId ? "PUT" : "POST";
     const url = reviewId ? `/api/review/${reviewId}` : `/api/review/`;
-
-    console.log("Review payload:", {
-      roomId,
-      text,
-      rating,
-      reservationId
-    });
     
     const response = await fetch(url, {
       method,
@@ -24,7 +17,6 @@ export async function submitReview(roomId, text, rating, reservationId, reviewId
     });
 
     if (!response.ok) {
-      console.log(response);
       const errorData = await response.json();
       throw new Error(errorData.error || "Nepodarilo sa odoslať recenziu.");
     }
@@ -136,7 +128,6 @@ export async function setReviewPublished(reviewId, published) {
     if (!response.ok) {
       throw new Error("Nepodarilo sa zmeniť publikáciu recenzie.");
     }
-    console.log(response);
     return await response.json();
   } catch (err) {
     console.error("Chyba pri zmene publikácie:", err);

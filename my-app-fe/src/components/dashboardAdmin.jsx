@@ -30,7 +30,6 @@ function DashboardAdmin(props) {
       props.setUserRole(null);
       navigate('/');
     } catch (error) {
-      console.log(error.message);
       props.setError(error.message);
     }
   };

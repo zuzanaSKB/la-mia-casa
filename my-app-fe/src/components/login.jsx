@@ -23,7 +23,6 @@ function Login(props) {
 
     try {
       const data = await login(email, password);
-      console.log("data: ", data);
       props.setAuthStatus(true);
       props.setUserRole(data.role);
       props.setUserId(data.id);
@@ -36,7 +35,6 @@ function Login(props) {
         navigate('/dashboardAdmin');
       }
     } catch (error) {
-      console.log("Error:", error.message);
       props.setError(error.message);
     }
   };

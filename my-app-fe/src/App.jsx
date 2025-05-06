@@ -25,7 +25,6 @@ function App() {
       if (userId && userRole !== 'admin') {
         try {
           const response = await getBirthdayDiscount();
-          console.log("discount response: ", response);
   
           if (response && response.discount) {
             setHasBirthdayDiscount(response.discount);

@@ -74,7 +74,7 @@ function BookRoomForm({ error, setError, setAuthStatus, setUserRole, hasBirthday
         try {
           await expireBirthdayDiscount();
           setHasBirthdayDiscount(null);
-          console.log("Birthday discount expired after booking.");
+          //console.log("Birthday discount expired after booking.");
         } catch (expireError) {
           console.error("Failed to expire birthday discount:", expireError);
         }

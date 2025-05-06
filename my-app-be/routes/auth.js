@@ -24,7 +24,6 @@ router.post("/login", async (req, res) => {
             if (isValid) {
                 req.session.userId = user.id;  //create session
                 req.session.role = user.role;
-                console.log("Session created:", req.session);
                 
                 //create birthday discount if its user's birthday
                 await createOrUpdateBirthdayDiscountIfToday(user.id, user.birth_date);

@@ -44,7 +44,6 @@ function Registration() {
       //redirect to login page after 2 seconds
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
-      console.log("Error:", error);
       setError(error.message || "Chyba pri registrácii.");
     }
   };
